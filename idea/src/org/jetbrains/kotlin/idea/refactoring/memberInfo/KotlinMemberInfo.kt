@@ -14,18 +14,32 @@
  * limitations under the License.
  */
 
-package org.jetbrains.kotlin.idea.refactoring
+package org.jetbrains.kotlin.idea.refactoring.memberInfo
 
+import com.intellij.refactoring.classMembers.AbstractMemberInfoStorage
 import com.intellij.refactoring.classMembers.MemberInfoBase
-import com.intellij.refactoring.classMembers.MemberInfoModel
+import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.idea.caches.resolve.resolveToDescriptor
+import org.jetbrains.kotlin.idea.codeInsight.DescriptorToSourceUtilsIde
 import org.jetbrains.kotlin.idea.util.IdeDescriptorRenderers
+import org.jetbrains.kotlin.idea.util.immediateSupertypes
+import org.jetbrains.kotlin.psi.JetClassOrObject
+import org.jetbrains.kotlin.psi.JetConstructor
 import org.jetbrains.kotlin.psi.JetFile
 import org.jetbrains.kotlin.psi.JetNamedDeclaration
+import org.jetbrains.kotlin.resolve.DescriptorUtils
+import org.jetbrains.kotlin.resolve.OverloadUtil
+import java.util.ArrayList
 
 public class KotlinMemberInfo(member: JetNamedDeclaration) : MemberInfoBase<JetNamedDeclaration>(member) {
     init {
+        val memberDescriptor = member.resolveToDescriptor()
         isStatic = member.getParent() is JetFile
-        displayName = IdeDescriptorRenderers.SOURCE_CODE_SHORT_NAMES_IN_TYPES.render(member.resolveToDescriptor())
+        displayName = IdeDescriptorRenderers.SOURCE_CODE_SHORT_NAMES_IN_TYPES.render(memberDescriptor)
+
+        val overriddenDescriptors = (memberDescriptor as? CallableMemberDescriptor)?.getOverriddenDescriptors() ?: emptySet()
+        if (overriddenDescriptors.isNotEmpty()) {
+            overrides = overriddenDescriptors.any { it.getModality() != Modality.ABSTRACT }
+        }
     }
 }
