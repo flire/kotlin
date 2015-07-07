@@ -16,6 +16,18 @@
 
 package kotlin.reflect.jvm.internal
 
+import org.jetbrains.kotlin.descriptors.CallableMemberDescriptor
 import kotlin.reflect.KCallable
+import kotlin.reflect.KParameter
 
-interface KCallableImpl<out R> : KCallable<R>
+interface KCallableImpl<out R> : KCallable<R> {
+    val descriptor: CallableMemberDescriptor
+
+    override val parameters: List<KParameter>
+        get() {
+            val arity = descriptor.getValueParameters().size() +
+                        (if (descriptor.getDispatchReceiverParameter() != null) 1 else 0) +
+                        (if (descriptor.getExtensionReceiverParameter() != null) 1 else 0)
+            return (1..arity).map { KParameterImpl(this, it - 1) }
+        }
+}
