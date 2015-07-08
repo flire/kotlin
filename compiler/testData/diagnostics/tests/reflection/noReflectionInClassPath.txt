@@ -12,7 +12,7 @@ internal fun n09(/*0*/ p: kotlin.reflect.KProperty2<kotlin.String, kotlin.String
 internal fun n10(): kotlin.Unit
 internal fun n11(): kotlin.Unit
 internal fun y01(): kotlin.reflect.KProperty1.Getter<Foo, kotlin.Any>
-internal fun y02(): kotlin.Collection<kotlin.reflect.KProperty1<Foo, *>>
+internal fun y02(): kotlin.Collection<kotlin.reflect.KElement>
 internal fun y03(): kotlin.String?
 
 internal final class Foo {

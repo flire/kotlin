@@ -17,7 +17,6 @@
 package kotlin.reflect
 
 /**
- * Represents an entity which may contain declarations of any other entities,
- * such as a class or a package.
+ * Root of the hierarchy for elements with introspection capabilities.
  */
-public interface KDeclarationContainer : KElement
+public interface KElement

@@ -39,12 +39,9 @@ public interface KClass<T> : KDeclarationContainer {
     public val qualifiedName: String?
 
     /**
-     * Returns non-extension properties declared in this class and all of its superclasses.
+     * All elements accessible in this class, including functions and properties
+     * declared in this class and all of its superclasses, and constructors and nested classes
+     * declared in this class.
      */
-    public val properties: Collection<KProperty1<T, *>>
-
-    /**
-     * Returns extension properties declared in this class and all of its superclasses.
-     */
-    public val extensionProperties: Collection<KProperty2<T, *, *>>
+    public val members: Collection<KElement>
 }
