@@ -1,0 +1,17 @@
+// WITH_RUNTIME
+interface I
+
+class Z<T>
+
+open class A<T: I, U: I, V> {
+    // INFO: {"checked": "true"}
+    fun foo<S>(x1: T, x2: Z<T>, y1: Any, y2: Z<*>, w1: I, w2: Z<*>, s1: S, s2: Z<S>) {
+
+    }
+}
+
+class C<W: I> {
+    inner class B<X: I, Y>: A<X, I, Z<Y>>() {
+
+    }
+}

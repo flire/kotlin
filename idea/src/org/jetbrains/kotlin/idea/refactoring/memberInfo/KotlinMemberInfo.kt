@@ -16,17 +16,18 @@
 
 package org.jetbrains.kotlin.idea.refactoring.memberInfo
 
+import com.intellij.psi.PsiMember
 import com.intellij.refactoring.classMembers.AbstractMemberInfoStorage
 import com.intellij.refactoring.classMembers.MemberInfoBase
+import com.intellij.refactoring.util.classMembers.MemberInfo
+import org.jetbrains.kotlin.asJava.getRepresentativeLightMethod
+import org.jetbrains.kotlin.asJava.toLightClass
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.idea.caches.resolve.resolveToDescriptor
 import org.jetbrains.kotlin.idea.codeInsight.DescriptorToSourceUtilsIde
 import org.jetbrains.kotlin.idea.util.IdeDescriptorRenderers
 import org.jetbrains.kotlin.idea.util.immediateSupertypes
-import org.jetbrains.kotlin.psi.JetClassOrObject
-import org.jetbrains.kotlin.psi.JetConstructor
-import org.jetbrains.kotlin.psi.JetFile
-import org.jetbrains.kotlin.psi.JetNamedDeclaration
+import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.DescriptorUtils
 import org.jetbrains.kotlin.resolve.OverloadUtil
 import java.util.ArrayList
@@ -42,4 +43,18 @@ public class KotlinMemberInfo(member: JetNamedDeclaration) : MemberInfoBase<JetN
             overrides = overriddenDescriptors.any { it.getModality() != Modality.ABSTRACT }
         }
     }
+}
+
+public fun KotlinMemberInfo.toJavaMemberInfo(): MemberInfo? {
+    val declaration = getMember()
+    val psiMember: PsiMember? = when (declaration) {
+        is JetNamedFunction, is JetProperty -> declaration.getRepresentativeLightMethod()
+        is JetClassOrObject -> declaration.toLightClass()
+        else -> null
+    }
+    if (psiMember == null) return null
+
+    val info = MemberInfo(psiMember)
+    info.setToAbstract(isToAbstract())
+    return info
 }
