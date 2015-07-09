@@ -80,3 +80,6 @@ private fun <T> arrayPlusCollection(array: dynamic, collection: Collection<T>): 
     for (element in collection) result[index++] = element
     return result
 }
+
+/** Returns true when it's safe to convert this collection to a set without changing contains method behavior. */
+private fun <T> Collection<T>.safeToConvertToSet() = size() > 2 && this is ArrayList

@@ -36,3 +36,6 @@ public fun sortedSetOf<T>(comparator: Comparator<T>, vararg values: T): TreeSet<
  * in the order they are returned by the enumeration.
  */
 public fun <T> Enumeration<T>.toList(): List<T> = Collections.list(this)
+
+/** Returns true when it's safe to convert this collection to a set without changing contains method behavior. */
+private fun <T> Collection<T>.safeToConvertToSet() = size() > 2 && this.javaClass == javaClass<ArrayList<*>>()
