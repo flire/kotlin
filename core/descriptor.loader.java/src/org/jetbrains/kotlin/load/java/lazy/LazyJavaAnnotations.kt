@@ -16,6 +16,7 @@
 
 package org.jetbrains.kotlin.load.java.lazy
 
+import org.jetbrains.kotlin.descriptors.annotations.AnnotationWithApplicability
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.load.java.lazy.descriptors.resolveAnnotation
 import org.jetbrains.kotlin.load.java.structure.JavaAnnotation
@@ -37,6 +38,8 @@ class LazyJavaAnnotations(
 
     override fun findExternalAnnotation(fqName: FqName) =
             c.externalAnnotationResolver.findExternalAnnotation(annotationOwner, fqName)?.let(annotationDescriptors)
+
+    override fun getAnnotationsWithApplicability() = emptyList<AnnotationWithApplicability>()
 
     override fun iterator() =
             annotationOwner.getAnnotations().asSequence().map(annotationDescriptors).filterNotNull().iterator()

@@ -32,7 +32,7 @@ import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.types.ErrorUtils
 import org.jetbrains.kotlin.descriptors.ClassKind
-import org.jetbrains.kotlin.descriptors.annotations.AnnotationTarget
+import org.jetbrains.kotlin.descriptors.annotations.AnnotationApplicability
 import org.jetbrains.kotlin.types.Variance
 import org.jetbrains.kotlin.types.typeUtil.isSubtypeOf
 
@@ -52,7 +52,7 @@ public class AnnotationDeserializer(private val module: ModuleDescriptor) {
             arguments.toMap()
         }
 
-        return AnnotationDescriptorImpl(annotationClass.getDefaultType(), arguments, AnnotationTarget.NO_TARGET)
+        return AnnotationDescriptorImpl(annotationClass.getDefaultType(), arguments)
     }
 
     private fun resolveArgument(

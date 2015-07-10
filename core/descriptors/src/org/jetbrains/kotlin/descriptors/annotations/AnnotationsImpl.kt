@@ -20,13 +20,20 @@ import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.resolve.DescriptorUtils
 
-public class AnnotationsImpl(private val annotations: List<AnnotationDescriptor>) : Annotations {
+public class AnnotationsImpl(
+        private val annotations: List<AnnotationDescriptor>,
+        annotationsWithApplicability: List<AnnotationWithApplicability>?
+) : Annotations {
+    private val annotationsWithApplicability: List<AnnotationWithApplicability> = annotationsWithApplicability ?: emptyList()
+
     override fun isEmpty() = annotations.isEmpty()
 
     override fun findAnnotation(fqName: FqName) = annotations.firstOrNull {
         val descriptor = it.getType().getConstructor().getDeclarationDescriptor()
         descriptor is ClassDescriptor && fqName.toUnsafe() == DescriptorUtils.getFqName(descriptor)
     }
+
+    override fun getAnnotationsWithApplicability() = annotationsWithApplicability
 
     override fun findExternalAnnotation(fqName: FqName) = null
 

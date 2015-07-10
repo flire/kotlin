@@ -106,7 +106,7 @@ public class JetVisitor<R, D> extends PsiElementVisitor {
         return visitJetElement(annotationEntry, data);
     }
 
-    public R visitAnnotationTarget(@NotNull JetAnnotationTarget annotationTarget, D data) {
+    public R visitAnnotationTarget(@NotNull JetAnnotationApplicability annotationTarget, D data) {
         return visitJetElement(annotationTarget, data);
     }
 

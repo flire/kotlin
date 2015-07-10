@@ -16,16 +16,19 @@
 
 package org.jetbrains.kotlin.descriptors.annotations
 
+import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.resolve.DescriptorUtils
 
-public trait Annotations : Iterable<AnnotationDescriptor> {
+public interface Annotations : Iterable<AnnotationDescriptor> {
 
     public fun isEmpty(): Boolean
 
     public fun findAnnotation(fqName: FqName): AnnotationDescriptor?
 
     public fun findExternalAnnotation(fqName: FqName): AnnotationDescriptor?
+
+    public fun getAnnotationsWithApplicability(): List<AnnotationWithApplicability>
 
     companion object {
         public val EMPTY: Annotations = object : Annotations {
@@ -34,6 +37,8 @@ public trait Annotations : Iterable<AnnotationDescriptor> {
             override fun findAnnotation(fqName: FqName) = null
 
             override fun findExternalAnnotation(fqName: FqName) = null
+
+            override fun getAnnotationsWithApplicability() = emptyList<AnnotationWithApplicability>()
 
             override fun iterator() = emptyList<AnnotationDescriptor>().iterator()
 
@@ -54,14 +59,18 @@ class FilteredAnnotations(
             if (fqNameFilter(fqName)) delegate.findExternalAnnotation(fqName)
             else null
 
-    override fun iterator() = delegate.sequence()
-            .filter { annotation ->
-                val descriptor = annotation.getType().getConstructor().getDeclarationDescriptor()
-                descriptor != null && DescriptorUtils.getFqName(descriptor).let { fqName ->
-                    fqName.isSafe() && fqNameFilter(fqName.toSafe())
-                }
-            }
-            .iterator()
+    override fun getAnnotationsWithApplicability(): List<AnnotationWithApplicability> {
+        return delegate.getAnnotationsWithApplicability().filter { shouldBeReturned(it.annotation) }
+    }
+
+    override fun iterator() = delegate.asSequence().filter { shouldBeReturned(it) }.iterator()
+
+    private fun shouldBeReturned(annotation: AnnotationDescriptor): Boolean {
+        val descriptor = annotation.getType().getConstructor().getDeclarationDescriptor()
+        return descriptor != null && DescriptorUtils.getFqName(descriptor).let { fqName ->
+            fqName.isSafe() && fqNameFilter(fqName.toSafe())
+        }
+    }
 
     override fun isEmpty() = !iterator().hasNext()
 }
@@ -74,6 +83,8 @@ class CompositeAnnotations(
     override fun findAnnotation(fqName: FqName) = delegates.asSequence().map { it.findAnnotation(fqName) }.filterNotNull().firstOrNull()
 
     override fun findExternalAnnotation(fqName: FqName) = delegates.asSequence().map { it.findExternalAnnotation(fqName) }.filterNotNull().firstOrNull()
+
+    override fun getAnnotationsWithApplicability() = delegates.flatMap { it.getAnnotationsWithApplicability() }
 
     override fun iterator() = delegates.asSequence().flatMap { it.asSequence() }.iterator()
 }

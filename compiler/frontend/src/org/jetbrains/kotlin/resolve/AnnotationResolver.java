@@ -24,9 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.kotlin.builtins.KotlinBuiltIns;
 import org.jetbrains.kotlin.descriptors.*;
-import org.jetbrains.kotlin.descriptors.annotations.AnnotationDescriptor;
-import org.jetbrains.kotlin.descriptors.annotations.Annotations;
-import org.jetbrains.kotlin.descriptors.annotations.AnnotationsImpl;
+import org.jetbrains.kotlin.descriptors.annotations.*;
 import org.jetbrains.kotlin.diagnostics.Errors;
 import org.jetbrains.kotlin.psi.*;
 import org.jetbrains.kotlin.resolve.calls.ArgumentTypeResolver;
@@ -146,6 +144,7 @@ public class AnnotationResolver {
     ) {
         if (annotationEntryElements.isEmpty()) return Annotations.EMPTY;
         List<AnnotationDescriptor> result = Lists.newArrayList();
+        List<AnnotationWithApplicability> annotationsWithApplicability = Lists.newArrayList();
         for (JetAnnotationEntry entryElement : annotationEntryElements) {
             AnnotationDescriptor descriptor = trace.get(BindingContext.ANNOTATION, entryElement);
             if (descriptor == null) {
@@ -155,9 +154,15 @@ public class AnnotationResolver {
                 ForceResolveUtil.forceResolveAllContents(descriptor);
             }
 
-            result.add(descriptor);
+            JetAnnotationApplicability applicability = entryElement.getApplicability();
+            if (applicability != null) {
+                annotationsWithApplicability.add(new AnnotationWithApplicability(descriptor, applicability.getAnnotationApplicability()));
+            }
+            else {
+                result.add(descriptor);
+            }
         }
-        return new AnnotationsImpl(result);
+        return new AnnotationsImpl(result, annotationsWithApplicability);
     }
 
     @NotNull

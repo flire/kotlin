@@ -649,8 +649,7 @@ public class KotlinBuiltIns {
     public AnnotationDescriptor createExtensionAnnotation() {
         return new AnnotationDescriptorImpl(getBuiltInClassByName("extension").getDefaultType(),
                                             Collections.<ValueParameterDescriptor,
-                                            CompileTimeConstant<?>>emptyMap(),
-                                            AnnotationTarget.NO_TARGET);
+                                            CompileTimeConstant<?>>emptyMap());
     }
 
     private static boolean isTypeAnnotatedWithExtension(@NotNull JetType type) {
@@ -679,7 +678,7 @@ public class KotlinBuiltIns {
         if (annotations.findAnnotation(FQ_NAMES.extension) != null) return annotations;
 
         // TODO: preserve laziness of given annotations
-        return new AnnotationsImpl(plus(annotations, listOf(createExtensionAnnotation())));
+        return new AnnotationsImpl(plus(annotations, listOf(createExtensionAnnotation())), null);
     }
 
     @NotNull

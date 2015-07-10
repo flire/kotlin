@@ -22,7 +22,7 @@ import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor
 import org.jetbrains.kotlin.descriptors.annotations.AnnotationDescriptor
 import org.jetbrains.kotlin.descriptors.annotations.AnnotationDescriptorImpl
-import org.jetbrains.kotlin.descriptors.annotations.AnnotationTarget
+import org.jetbrains.kotlin.descriptors.annotations.AnnotationApplicability
 import org.jetbrains.kotlin.load.java.components.DescriptorResolverUtils
 import org.jetbrains.kotlin.load.kotlin.KotlinJvmBinaryClass.AnnotationArrayArgumentVisitor
 import org.jetbrains.kotlin.name.ClassId
@@ -138,7 +138,7 @@ public class BinaryClassAnnotationAndConstantLoaderImpl(
             }
 
             override fun visitEnd() {
-                result.add(AnnotationDescriptorImpl(annotationClass.getDefaultType(), arguments, AnnotationTarget.NO_TARGET))
+                result.add(AnnotationDescriptorImpl(annotationClass.getDefaultType(), arguments))
             }
 
             private fun createConstant(name: Name?, value: Any?): CompileTimeConstant<*> {

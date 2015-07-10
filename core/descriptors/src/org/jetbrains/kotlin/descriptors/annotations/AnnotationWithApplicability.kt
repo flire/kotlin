@@ -16,8 +16,4 @@
 
 package org.jetbrains.kotlin.descriptors.annotations
 
-public enum class AnnotationTarget {
-    NO_TARGET,
-    FIELD,
-    FILE
-}
+public class AnnotationWithApplicability(val annotation: AnnotationDescriptor, val applicability: AnnotationApplicability)

@@ -18,26 +18,26 @@ package org.jetbrains.kotlin.psi
 
 import com.intellij.lang.ASTNode
 import com.intellij.psi.impl.source.tree.TreeElement
-import org.jetbrains.kotlin.descriptors.annotations.AnnotationTarget
+import org.jetbrains.kotlin.descriptors.annotations.AnnotationApplicability
 import org.jetbrains.kotlin.lexer.JetKeywordToken
 import org.jetbrains.kotlin.lexer.JetTokens
 import org.jetbrains.kotlin.psi.stubs.KotlinAnnotationEntryStub
 import org.jetbrains.kotlin.psi.stubs.KotlinPlaceHolderStub
 import org.jetbrains.kotlin.psi.stubs.elements.JetStubElementTypes
 
-public class JetAnnotationTarget : JetElementImplStub<KotlinPlaceHolderStub<JetAnnotationTarget>> {
+public class JetAnnotationApplicability : JetElementImplStub<KotlinPlaceHolderStub<JetAnnotationApplicability>> {
 
     constructor(node: ASTNode): super(node)
 
-    constructor(stub: KotlinPlaceHolderStub<JetAnnotationTarget>) : super(stub, JetStubElementTypes.ANNOTATION_TARGET)
+    constructor(stub: KotlinPlaceHolderStub<JetAnnotationApplicability>) : super(stub, JetStubElementTypes.ANNOTATION_TARGET)
 
     override fun <R, D> accept(visitor: JetVisitor<R, D>, data: D) = visitor.visitAnnotationTarget(this, data)
 
-    public fun getAnnotationTarget(): AnnotationTarget {
+    public fun getAnnotationApplicability(): AnnotationApplicability {
         val node = getFirstChild().getNode()
         return when (node.getElementType()) {
-            JetTokens.FIELD_KEYWORD -> AnnotationTarget.FIELD
-            JetTokens.FILE_KEYWORD -> AnnotationTarget.FILE
+            JetTokens.FIELD_KEYWORD -> AnnotationApplicability.FIELD
+            JetTokens.FILE_KEYWORD -> AnnotationApplicability.FILE
             else -> throw IllegalStateException("Unknown annotation target " + node.getText())
         }
     }

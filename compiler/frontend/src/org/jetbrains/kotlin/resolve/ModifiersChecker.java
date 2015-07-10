@@ -26,7 +26,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.kotlin.descriptors.*;
 import org.jetbrains.kotlin.descriptors.annotations.AnnotationDescriptor;
-import org.jetbrains.kotlin.descriptors.annotations.AnnotationTarget;
+import org.jetbrains.kotlin.descriptors.annotations.AnnotationApplicability;
+import org.jetbrains.kotlin.descriptors.annotations.AnnotationWithApplicability;
 import org.jetbrains.kotlin.diagnostics.*;
 import org.jetbrains.kotlin.lexer.JetModifierKeywordToken;
 import org.jetbrains.kotlin.lexer.JetTokens;
@@ -150,7 +151,7 @@ public class ModifiersChecker {
             checkVarargsModifiers(modifierListOwner, descriptor);
         }
         checkPlatformNameApplicability(descriptor);
-        checkAnnotationsTargetApplicability(descriptor);
+        checkAnnotationsApplicability(descriptor);
         runDeclarationCheckers(modifierListOwner, descriptor);
     }
 
@@ -164,7 +165,7 @@ public class ModifiersChecker {
         reportIllegalModalityModifiers(modifierListOwner);
         reportIllegalVisibilityModifiers(modifierListOwner);
         checkPlatformNameApplicability(descriptor);
-        checkAnnotationsTargetApplicability(descriptor);
+        checkAnnotationsApplicability(descriptor);
         runDeclarationCheckers(modifierListOwner, descriptor);
     }
 
@@ -323,11 +324,12 @@ public class ModifiersChecker {
 
     }
 
-    private void checkAnnotationsTargetApplicability(@NotNull DeclarationDescriptor descriptor) {
-        for (AnnotationDescriptor annotation : descriptor.getAnnotations()) {
-            AnnotationTarget target = annotation.getTarget();
+    private void checkAnnotationsApplicability(@NotNull DeclarationDescriptor descriptor) {
+        for (AnnotationWithApplicability annotationWithApplicability : descriptor.getAnnotations().getAnnotationsWithApplicability()) {
+            AnnotationDescriptor annotation = annotationWithApplicability.getAnnotation();
+            AnnotationApplicability applicability = annotationWithApplicability.getApplicability();
 
-            if (AnnotationTarget.FIELD == target) {
+            if (AnnotationApplicability.FIELD == applicability) {
                 if (!(descriptor instanceof PropertyDescriptor)) {
                     reportAnnotationTargetNotApplicable(annotation);
                     continue;

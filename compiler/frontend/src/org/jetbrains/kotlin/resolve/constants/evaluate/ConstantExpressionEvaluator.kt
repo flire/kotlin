@@ -31,7 +31,7 @@ import org.jetbrains.kotlin.resolve.calls.tasks.ExplicitReceiverKind
 import org.jetbrains.kotlin.types.TypeUtils
 import org.jetbrains.kotlin.resolve.calls.model.ResolvedValueArgument
 import org.jetbrains.kotlin.JetNodeTypes
-import org.jetbrains.kotlin.descriptors.annotations.AnnotationTarget
+import org.jetbrains.kotlin.descriptors.annotations.AnnotationApplicability
 import org.jetbrains.kotlin.diagnostics.DiagnosticUtils
 import java.math.BigInteger
 import org.jetbrains.kotlin.diagnostics.Errors
@@ -397,8 +397,7 @@ public class ConstantExpressionEvaluator private constructor(val trace: BindingT
             if (DescriptorUtils.isAnnotationClass(classDescriptor)) {
                 val descriptor = AnnotationDescriptorImpl(
                         classDescriptor.getDefaultType(),
-                        AnnotationResolver.resolveAnnotationArguments(call, trace),
-                        AnnotationTarget.NO_TARGET
+                        AnnotationResolver.resolveAnnotationArguments(call, trace)
                 )
                 return AnnotationValue(descriptor)
             }
