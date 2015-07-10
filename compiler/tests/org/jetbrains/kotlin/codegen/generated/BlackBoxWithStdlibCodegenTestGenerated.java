@@ -3153,12 +3153,6 @@ public class BlackBoxWithStdlibCodegenTestGenerated extends AbstractBlackBoxCode
                 doTestWithStdlib(fileName);
             }
 
-            @TestMetadata("packageForJavaStaticToString.kt")
-            public void testPackageForJavaStaticToString() throws Exception {
-                String fileName = JetTestUtils.navigationMetadata("compiler/testData/codegen/boxWithStdlib/reflection/methodsFromAny/packageForJavaStaticToString.kt");
-                doTestWithStdlib(fileName);
-            }
-
             @TestMetadata("packageToString.kt")
             public void testPackageToString() throws Exception {
                 String fileName = JetTestUtils.navigationMetadata("compiler/testData/codegen/boxWithStdlib/reflection/methodsFromAny/packageToString.kt");
