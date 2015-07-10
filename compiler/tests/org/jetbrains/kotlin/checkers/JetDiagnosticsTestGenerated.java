@@ -998,6 +998,12 @@ public class JetDiagnosticsTestGenerated extends AbstractJetDiagnosticsTest {
                     doTest(fileName);
                 }
 
+                @TestMetadata("PropertyAnnotations.kt")
+                public void testPropertyAnnotations() throws Exception {
+                    String fileName = JetTestUtils.navigationMetadata("compiler/testData/diagnostics/tests/annotations/withApplicability/PropertyAnnotations.kt");
+                    doTest(fileName);
+                }
+
                 @TestMetadata("SetterAnnotations.kt")
                 public void testSetterAnnotations() throws Exception {
                     String fileName = JetTestUtils.navigationMetadata("compiler/testData/diagnostics/tests/annotations/withApplicability/SetterAnnotations.kt");
