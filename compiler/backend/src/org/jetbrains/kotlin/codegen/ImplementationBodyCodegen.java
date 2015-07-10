@@ -1089,7 +1089,7 @@ public class ImplementationBodyCodegen extends ClassBodyCodegen {
 
         JetPrimaryConstructor primaryConstructor = myClass.getPrimaryConstructor();
         JvmDeclarationOrigin origin = OtherOrigin(primaryConstructor != null ? primaryConstructor : myClass, constructorDescriptor);
-        functionCodegen.generateMethod(origin, constructorDescriptor, constructorContext,
+        functionCodegen.generateMethod(origin, constructorDescriptor, constructorContext, null,
                    new FunctionGenerationStrategy.CodegenBased<ConstructorDescriptor>(state, constructorDescriptor) {
                        @Override
                        public void doGenerateBody(@NotNull ExpressionCodegen codegen, @NotNull JvmMethodSignature signature) {
@@ -1115,7 +1115,7 @@ public class ImplementationBodyCodegen extends ClassBodyCodegen {
         ConstructorContext constructorContext = context.intoConstructor(constructorDescriptor);
 
         functionCodegen.generateMethod(OtherOrigin(descriptorToDeclaration(constructorDescriptor), constructorDescriptor),
-                                       constructorDescriptor, constructorContext,
+                                       constructorDescriptor, constructorContext, null,
                                        new FunctionGenerationStrategy.CodegenBased<ConstructorDescriptor>(state, constructorDescriptor) {
                                            @Override
                                            public void doGenerateBody(@NotNull ExpressionCodegen codegen, @NotNull JvmMethodSignature signature) {

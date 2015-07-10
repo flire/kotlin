@@ -36,6 +36,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.*;
 
+import static org.jetbrains.kotlin.descriptors.annotations.AnnotationApplicability.*;
 import static org.jetbrains.kotlin.resolve.descriptorUtil.DescriptorUtilPackage.getClassObjectType;
 
 public abstract class AnnotationCodegen {
@@ -81,6 +82,10 @@ public abstract class AnnotationCodegen {
      * @param returnType can be null if not applicable (e.g. {@code annotated} is a class)
      */
     public void genAnnotations(@Nullable Annotated annotated, @Nullable Type returnType) {
+        genAnnotations(annotated, returnType, null);
+    }
+
+    public void genAnnotations(@Nullable Annotated annotated, @Nullable Type returnType, @Nullable AnnotationApplicability applicability) {
         if (annotated == null) {
             return;
         }
@@ -100,26 +105,18 @@ public abstract class AnnotationCodegen {
             }
         }
 
-        for (AnnotationWithApplicability annotationWithApplicability : annotations.getAnnotationsWithApplicability()) {
-            if (!isApplicable(annotated, annotationWithApplicability)) continue;
+        if (applicability != null) {
+            for (AnnotationWithApplicability annotationWithApplicability : annotations.getAnnotationsWithApplicability()) {
+                if (applicability != annotationWithApplicability.getApplicability()) continue;
 
-            String descriptor = genAnnotation(annotationWithApplicability.getAnnotation());
-            if (descriptor != null) {
-                annotationDescriptorsAlreadyPresent.add(descriptor);
+                String descriptor = genAnnotation(annotationWithApplicability.getAnnotation());
+                if (descriptor != null) {
+                    annotationDescriptorsAlreadyPresent.add(descriptor);
+                }
             }
         }
 
         generateAdditionalAnnotations(annotated, returnType, annotationDescriptorsAlreadyPresent);
-    }
-
-    private static boolean isApplicable(Annotated annotated, AnnotationWithApplicability annotationWithApplicability) {
-        AnnotationApplicability annotationApplicability = annotationWithApplicability.getApplicability();
-
-        if (annotationApplicability == AnnotationApplicability.FIELD) {
-            return annotated instanceof PropertyDescriptor;
-        }
-
-        throw new IllegalArgumentException("Annotation target was not handled: " + annotationApplicability.name());
     }
 
     private void generateAdditionalAnnotations(

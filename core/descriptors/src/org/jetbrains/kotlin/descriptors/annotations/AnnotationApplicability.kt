@@ -18,5 +18,7 @@ package org.jetbrains.kotlin.descriptors.annotations
 
 public enum class AnnotationApplicability {
     FIELD,
-    FILE
+    FILE,
+    PROPERTY_GETTER,
+    PROPERTY_SETTER
 }

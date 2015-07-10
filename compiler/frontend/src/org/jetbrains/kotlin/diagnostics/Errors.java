@@ -132,6 +132,9 @@ public interface Errors {
     DiagnosticFactory0<JetExpression> ANNOTATION_PARAMETER_DEFAULT_VALUE_MUST_BE_CONSTANT = DiagnosticFactory0.create(ERROR);
 
     DiagnosticFactory0<PsiElement> INAPPLICABLE_FIELD_TARGET = DiagnosticFactory0.create(ERROR);
+    DiagnosticFactory0<PsiElement> INAPPLICABLE_GET_TARGET = DiagnosticFactory0.create(ERROR);
+    DiagnosticFactory0<PsiElement> INAPPLICABLE_SET_TARGET = DiagnosticFactory0.create(ERROR);
+    DiagnosticFactory0<PsiElement> INAPPLICABLE_SET_TARGET_PROPERTY_IMMUTABLE = DiagnosticFactory0.create(ERROR);
 
     // Classes and traits
 

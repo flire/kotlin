@@ -151,7 +151,7 @@ public class ModifiersChecker {
             checkVarargsModifiers(modifierListOwner, descriptor);
         }
         checkPlatformNameApplicability(descriptor);
-        checkAnnotationsApplicability(descriptor);
+        checkAnnotationApplicability(descriptor);
         runDeclarationCheckers(modifierListOwner, descriptor);
     }
 
@@ -165,7 +165,7 @@ public class ModifiersChecker {
         reportIllegalModalityModifiers(modifierListOwner);
         reportIllegalVisibilityModifiers(modifierListOwner);
         checkPlatformNameApplicability(descriptor);
-        checkAnnotationsApplicability(descriptor);
+        checkAnnotationApplicability(descriptor);
         runDeclarationCheckers(modifierListOwner, descriptor);
     }
 
@@ -324,29 +324,58 @@ public class ModifiersChecker {
 
     }
 
-    private void checkAnnotationsApplicability(@NotNull DeclarationDescriptor descriptor) {
+    private void checkAnnotationApplicability(@NotNull DeclarationDescriptor descriptor) {
         for (AnnotationWithApplicability annotationWithApplicability : descriptor.getAnnotations().getAnnotationsWithApplicability()) {
             AnnotationDescriptor annotation = annotationWithApplicability.getAnnotation();
             AnnotationApplicability applicability = annotationWithApplicability.getApplicability();
 
-            if (AnnotationApplicability.FIELD == applicability) {
-                if (!(descriptor instanceof PropertyDescriptor)) {
-                    reportAnnotationTargetNotApplicable(annotation);
-                    continue;
-                }
+            switch (applicability) {
+                case FIELD:
+                    checkAnnotationFieldApplicability(descriptor, annotation);
+                    break;
+                case PROPERTY_GETTER:
+                    reportIfNotPropertyDescriptor(descriptor, annotation, INAPPLICABLE_GET_TARGET);
+                    break;
+                case PROPERTY_SETTER: {
+                    if (reportIfNotPropertyDescriptor(descriptor, annotation, INAPPLICABLE_SET_TARGET)) break;
 
-                PropertyDescriptor propertyDescriptor = (PropertyDescriptor) descriptor;
-                if (Boolean.FALSE.equals(trace.getBindingContext().get(BindingContext.BACKING_FIELD_REQUIRED, propertyDescriptor))) {
-                    reportAnnotationTargetNotApplicable(annotation);
+                    PropertyDescriptor propertyDescriptor = (PropertyDescriptor) descriptor;
+                    if (!propertyDescriptor.isVar()) {
+                        reportAnnotationTargetNotApplicable(annotation, INAPPLICABLE_SET_TARGET_PROPERTY_IMMUTABLE);
+                    }
+                    break;
                 }
+                case FILE:
+                    throw new IllegalArgumentException("@file annotations are not allowed here");
             }
         }
     }
 
-    private void reportAnnotationTargetNotApplicable(AnnotationDescriptor annotation) {
+    private void checkAnnotationFieldApplicability(DeclarationDescriptor descriptor, AnnotationDescriptor annotation) {
+        if (reportIfNotPropertyDescriptor(descriptor, annotation, INAPPLICABLE_FIELD_TARGET)) return;
+
+        PropertyDescriptor propertyDescriptor = (PropertyDescriptor) descriptor;
+        if (Boolean.FALSE.equals(trace.getBindingContext().get(BindingContext.BACKING_FIELD_REQUIRED, propertyDescriptor))) {
+            reportAnnotationTargetNotApplicable(annotation, INAPPLICABLE_FIELD_TARGET);
+        }
+    }
+
+    private boolean reportIfNotPropertyDescriptor(
+            DeclarationDescriptor descriptor,
+            AnnotationDescriptor annotation,
+            DiagnosticFactory0<PsiElement> diagnosticFactory
+    ) {
+        if (!(descriptor instanceof PropertyDescriptor)) {
+            reportAnnotationTargetNotApplicable(annotation, diagnosticFactory);
+            return true;
+        }
+        return false;
+    }
+
+    private void reportAnnotationTargetNotApplicable(AnnotationDescriptor annotation, DiagnosticFactory0<PsiElement> diagnosticFactory) {
         JetAnnotationEntry annotationEntry = trace.get(BindingContext.ANNOTATION_DESCRIPTOR_TO_PSI_ELEMENT, annotation);
         if (annotationEntry == null) return;
-        trace.report(INAPPLICABLE_FIELD_TARGET.on(annotationEntry));
+        trace.report(diagnosticFactory.on(annotationEntry));
     }
 
     private static boolean isRenamableDeclaration(@NotNull DeclarationDescriptor descriptor) {

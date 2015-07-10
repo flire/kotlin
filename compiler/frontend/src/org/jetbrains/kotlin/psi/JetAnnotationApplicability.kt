@@ -38,6 +38,8 @@ public class JetAnnotationApplicability : JetElementImplStub<KotlinPlaceHolderSt
         return when (node.getElementType()) {
             JetTokens.FIELD_KEYWORD -> AnnotationApplicability.FIELD
             JetTokens.FILE_KEYWORD -> AnnotationApplicability.FILE
+            JetTokens.GET_KEYWORD -> AnnotationApplicability.PROPERTY_GETTER
+            JetTokens.SET_KEYWORD -> AnnotationApplicability.PROPERTY_SETTER
             else -> throw IllegalStateException("Unknown annotation target " + node.getText())
         }
     }
