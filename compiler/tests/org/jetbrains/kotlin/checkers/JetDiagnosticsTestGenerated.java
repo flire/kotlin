@@ -753,12 +753,6 @@ public class JetDiagnosticsTestGenerated extends AbstractJetDiagnosticsTest {
                 doTest(fileName);
             }
 
-            @TestMetadata("FieldAnnotations.kt")
-            public void testFieldAnnotations() throws Exception {
-                String fileName = JetTestUtils.navigationMetadata("compiler/testData/diagnostics/tests/annotations/FieldAnnotations.kt");
-                doTest(fileName);
-            }
-
             @TestMetadata("forParameterAnnotationResolve.kt")
             public void testForParameterAnnotationResolve() throws Exception {
                 String fileName = JetTestUtils.navigationMetadata("compiler/testData/diagnostics/tests/annotations/forParameterAnnotationResolve.kt");
@@ -980,6 +974,33 @@ public class JetDiagnosticsTestGenerated extends AbstractJetDiagnosticsTest {
                 @TestMetadata("strings.kt")
                 public void testStrings() throws Exception {
                     String fileName = JetTestUtils.navigationMetadata("compiler/testData/diagnostics/tests/annotations/annotationParameterMustBeConstant/strings.kt");
+                    doTest(fileName);
+                }
+            }
+
+            @TestMetadata("compiler/testData/diagnostics/tests/annotations/withApplicability")
+            @TestDataPath("$PROJECT_ROOT")
+            @RunWith(JUnit3RunnerWithInners.class)
+            public static class WithApplicability extends AbstractJetDiagnosticsTest {
+                public void testAllFilesPresentInWithApplicability() throws Exception {
+                    JetTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/diagnostics/tests/annotations/withApplicability"), Pattern.compile("^(.+)\\.kt$"), true);
+                }
+
+                @TestMetadata("FieldAnnotations.kt")
+                public void testFieldAnnotations() throws Exception {
+                    String fileName = JetTestUtils.navigationMetadata("compiler/testData/diagnostics/tests/annotations/withApplicability/FieldAnnotations.kt");
+                    doTest(fileName);
+                }
+
+                @TestMetadata("GetterAnnotations.kt")
+                public void testGetterAnnotations() throws Exception {
+                    String fileName = JetTestUtils.navigationMetadata("compiler/testData/diagnostics/tests/annotations/withApplicability/GetterAnnotations.kt");
+                    doTest(fileName);
+                }
+
+                @TestMetadata("SetterAnnotations.kt")
+                public void testSetterAnnotations() throws Exception {
+                    String fileName = JetTestUtils.navigationMetadata("compiler/testData/diagnostics/tests/annotations/withApplicability/SetterAnnotations.kt");
                     doTest(fileName);
                 }
             }
