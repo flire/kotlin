@@ -17,9 +17,11 @@
 package org.jetbrains.kotlin.resolve.lazy;
 
 import com.intellij.openapi.diagnostic.Logger;
+import kotlin.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.kotlin.descriptors.*;
+import org.jetbrains.kotlin.descriptors.annotations.AnnotationApplicability;
 import org.jetbrains.kotlin.descriptors.annotations.AnnotationDescriptor;
 import org.jetbrains.kotlin.descriptors.annotations.AnnotationWithApplicability;
 import org.jetbrains.kotlin.descriptors.annotations.Annotations;
@@ -64,12 +66,8 @@ public class ForceResolveUtil {
 
     public static void forceResolveAllContents(@NotNull Annotations annotations) {
         doForceResolveAllContents(annotations);
-        for (AnnotationDescriptor annotation : annotations) {
-            doForceResolveAllContents(annotation);
-        }
-
-        for (AnnotationWithApplicability annotationWithApplicability : annotations.getAnnotationsWithApplicability()) {
-            doForceResolveAllContents(annotationWithApplicability.getAnnotation());
+        for (Pair<? extends AnnotationDescriptor, ? extends AnnotationApplicability> annotation : annotations.getAllAnnotations()) {
+            doForceResolveAllContents(annotation.getFirst());
         }
     }
 

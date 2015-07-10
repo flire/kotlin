@@ -16,8 +16,10 @@
 
 package org.jetbrains.kotlin.types;
 
+import kotlin.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.kotlin.descriptors.annotations.AnnotationApplicability;
 import org.jetbrains.kotlin.descriptors.annotations.AnnotationDescriptor;
 import org.jetbrains.kotlin.renderer.DescriptorRenderer;
 import org.jetbrains.kotlin.types.checker.JetTypeChecker;
@@ -54,9 +56,9 @@ public abstract class AbstractJetType implements JetType {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        for (AnnotationDescriptor annotation : getAnnotations()) {
+        for (Pair<? extends AnnotationDescriptor, ? extends AnnotationApplicability> annotation : getAnnotations().getAllAnnotations()) {
             sb.append("[");
-            sb.append(DescriptorRenderer.DEBUG_TEXT.renderAnnotation(annotation));
+            sb.append(DescriptorRenderer.DEBUG_TEXT.renderAnnotation(annotation.getFirst(), annotation.getSecond()));
             sb.append("] ");
         }
 

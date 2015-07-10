@@ -58,7 +58,15 @@ public class LazyAnnotations(
 
     private val annotation = c.storageManager.createMemoizedFunction {
         entry: JetAnnotationEntry ->
-        LazyAnnotationDescriptor(c, entry) to entry.getApplicability()?.getAnnotationApplicability()
+
+        val descriptor = LazyAnnotationDescriptor(c, entry)
+        val applicability = entry.getApplicability()?.getAnnotationApplicability()
+
+        if (applicability != null) {
+            c.trace.record(BindingContext.ANNOTATION_WITH_APPLICABILITY, entry, AnnotationWithApplicability(descriptor, applicability))
+        }
+
+        descriptor to applicability
     }
 
     override fun findAnnotation(fqName: FqName): AnnotationDescriptor? {
@@ -89,6 +97,8 @@ public class LazyAnnotations(
                 }.filterNotNull().toList()
     }
 
+    override fun getAllAnnotations() = annotationEntries.map(annotation)
+
     override fun iterator(): Iterator<AnnotationDescriptor> {
         return annotationEntries
                 .asSequence()
@@ -100,8 +110,7 @@ public class LazyAnnotations(
 
     override fun forceResolveAllContents() {
         // To resolve all entries
-        this.toList()
-        getAnnotationsWithApplicability()
+        getAllAnnotations()
     }
 }
 

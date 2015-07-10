@@ -19,12 +19,25 @@ package org.jetbrains.kotlin.descriptors.annotations
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.resolve.DescriptorUtils
+import kotlin.platform.platformStatic
 
-public class AnnotationsImpl(
-        private val annotations: List<AnnotationDescriptor>,
-        annotationsWithApplicability: List<AnnotationWithApplicability>?
-) : Annotations {
-    private val annotationsWithApplicability: List<AnnotationWithApplicability> = annotationsWithApplicability ?: emptyList()
+public class AnnotationsImpl : Annotations {
+    private val annotations: List<AnnotationDescriptor>
+    private val annotationsWithApplicability: List<Pair<AnnotationDescriptor, AnnotationApplicability?>>
+
+    constructor(annotations: List<AnnotationDescriptor>) {
+        this.annotations = annotations
+        this.annotationsWithApplicability = annotations.map { it to null }
+    }
+
+    // List<AnnotationDescriptor> and List<Pair<AnnotationDescriptor, AnnotationApplicability?>> have the same signature
+    private constructor(
+            annotationsWithApplicability: List<Pair<AnnotationDescriptor, AnnotationApplicability?>>,
+            @suppress("UNUSED_PARAMETER") i: Int
+    ) {
+        this.annotationsWithApplicability = annotationsWithApplicability
+        this.annotations = annotationsWithApplicability.filter { it.second == null }.map { it.first }
+    }
 
     override fun isEmpty() = annotations.isEmpty()
 
@@ -33,11 +46,24 @@ public class AnnotationsImpl(
         descriptor is ClassDescriptor && fqName.toUnsafe() == DescriptorUtils.getFqName(descriptor)
     }
 
-    override fun getAnnotationsWithApplicability() = annotationsWithApplicability
+    override fun getAnnotationsWithApplicability(): List<AnnotationWithApplicability> {
+        return annotationsWithApplicability
+                .filter { it.second != null }
+                .map { AnnotationWithApplicability(it.first, it.second!!) }
+    }
+
+    override fun getAllAnnotations() = annotationsWithApplicability
 
     override fun findExternalAnnotation(fqName: FqName) = null
 
     override fun iterator() = annotations.iterator()
 
     override fun toString() = annotations.toString()
+
+    companion object {
+        platformStatic
+        public fun create(annotationsWithApplicability: List<Pair<AnnotationDescriptor, AnnotationApplicability?>>): AnnotationsImpl {
+            return AnnotationsImpl(annotationsWithApplicability, 0)
+        }
+    }
 }

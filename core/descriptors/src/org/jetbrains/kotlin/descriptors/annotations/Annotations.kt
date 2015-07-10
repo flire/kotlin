@@ -30,6 +30,8 @@ public interface Annotations : Iterable<AnnotationDescriptor> {
 
     public fun getAnnotationsWithApplicability(): List<AnnotationWithApplicability>
 
+    public fun getAllAnnotations(): List<Pair<AnnotationDescriptor, AnnotationApplicability?>>
+
     companion object {
         public val EMPTY: Annotations = object : Annotations {
             override fun isEmpty() = true
@@ -39,6 +41,8 @@ public interface Annotations : Iterable<AnnotationDescriptor> {
             override fun findExternalAnnotation(fqName: FqName) = null
 
             override fun getAnnotationsWithApplicability() = emptyList<AnnotationWithApplicability>()
+
+            override fun getAllAnnotations() = emptyList<Pair<AnnotationDescriptor, AnnotationApplicability?>>()
 
             override fun iterator() = emptyList<AnnotationDescriptor>().iterator()
 
@@ -63,7 +67,11 @@ class FilteredAnnotations(
         return delegate.getAnnotationsWithApplicability().filter { shouldBeReturned(it.annotation) }
     }
 
-    override fun iterator() = delegate.asSequence().filter { shouldBeReturned(it) }.iterator()
+    override fun getAllAnnotations(): List<Pair<AnnotationDescriptor, AnnotationApplicability?>> {
+        return delegate.getAllAnnotations().filter { shouldBeReturned(it.first) }
+    }
+
+    override fun iterator() = delegate.filter { shouldBeReturned(it) }.iterator()
 
     private fun shouldBeReturned(annotation: AnnotationDescriptor): Boolean {
         val descriptor = annotation.getType().getConstructor().getDeclarationDescriptor()
@@ -85,6 +93,10 @@ class CompositeAnnotations(
     override fun findExternalAnnotation(fqName: FqName) = delegates.asSequence().map { it.findExternalAnnotation(fqName) }.filterNotNull().firstOrNull()
 
     override fun getAnnotationsWithApplicability() = delegates.flatMap { it.getAnnotationsWithApplicability() }
+
+    override fun getAllAnnotations(): List<Pair<AnnotationDescriptor, AnnotationApplicability?>> {
+        return delegates.flatMap { it.getAllAnnotations() }
+    }
 
     override fun iterator() = delegates.asSequence().flatMap { it.asSequence() }.iterator()
 }

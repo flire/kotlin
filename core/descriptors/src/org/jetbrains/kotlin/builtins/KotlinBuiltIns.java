@@ -678,7 +678,7 @@ public class KotlinBuiltIns {
         if (annotations.findAnnotation(FQ_NAMES.extension) != null) return annotations;
 
         // TODO: preserve laziness of given annotations
-        return new AnnotationsImpl(plus(annotations, listOf(createExtensionAnnotation())), null);
+        return new AnnotationsImpl(plus(annotations, listOf(createExtensionAnnotation())));
     }
 
     @NotNull

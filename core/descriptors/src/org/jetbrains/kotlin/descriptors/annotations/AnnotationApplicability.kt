@@ -16,10 +16,12 @@
 
 package org.jetbrains.kotlin.descriptors.annotations
 
-public enum class AnnotationApplicability {
-    FIELD,
-    FILE,
-    PROPERTY,
-    PROPERTY_GETTER,
-    PROPERTY_SETTER
+public enum class AnnotationApplicability(renderName: String? = null) {
+    FIELD(),
+    FILE(),
+    PROPERTY(),
+    PROPERTY_GETTER("get"),
+    PROPERTY_SETTER("set");
+
+    public val renderName: String = renderName ?: name().toLowerCase()
 }

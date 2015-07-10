@@ -56,6 +56,7 @@ import org.jetbrains.kotlin.types.JetType;
 import org.jetbrains.kotlin.types.checker.JetTypeChecker;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -143,8 +144,9 @@ public class AnnotationResolver {
             boolean shouldResolveArguments
     ) {
         if (annotationEntryElements.isEmpty()) return Annotations.EMPTY;
-        List<AnnotationDescriptor> result = Lists.newArrayList();
-        List<AnnotationWithApplicability> annotationsWithApplicability = Lists.newArrayList();
+        List<kotlin.Pair<AnnotationDescriptor, AnnotationApplicability>> result =
+                new ArrayList<kotlin.Pair<AnnotationDescriptor, AnnotationApplicability>>(0);
+
         for (JetAnnotationEntry entryElement : annotationEntryElements) {
             AnnotationDescriptor descriptor = trace.get(BindingContext.ANNOTATION, entryElement);
             if (descriptor == null) {
@@ -156,13 +158,13 @@ public class AnnotationResolver {
 
             JetAnnotationApplicability applicability = entryElement.getApplicability();
             if (applicability != null) {
-                annotationsWithApplicability.add(new AnnotationWithApplicability(descriptor, applicability.getAnnotationApplicability()));
+                result.add(KotlinPackage.to(descriptor, applicability.getAnnotationApplicability()));
             }
             else {
-                result.add(descriptor);
+                result.add(KotlinPackage.to(descriptor, (AnnotationApplicability) null));
             }
         }
-        return new AnnotationsImpl(result, annotationsWithApplicability);
+        return AnnotationsImpl.create(result);
     }
 
     @NotNull

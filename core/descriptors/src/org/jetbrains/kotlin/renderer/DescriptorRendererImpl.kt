@@ -19,6 +19,7 @@ package org.jetbrains.kotlin.renderer
 import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.annotations.Annotated
+import org.jetbrains.kotlin.descriptors.annotations.AnnotationApplicability
 import org.jetbrains.kotlin.descriptors.annotations.AnnotationDescriptor
 import org.jetbrains.kotlin.descriptors.annotations.DefaultAnnotationArgumentVisitor
 import org.jetbrains.kotlin.descriptors.impl.DeclarationDescriptorVisitorEmptyBodies
@@ -334,11 +335,11 @@ internal class DescriptorRendererImpl(
         val excluded = if (annotated is JetType) excludedTypeAnnotationClasses else excludedAnnotationClasses
 
         val annotationsBuilder = StringBuilder {
-            for (annotation in annotated.getAnnotations()) {
+            for ((annotation, applicability) in annotated.getAnnotations().getAllAnnotations()) {
                 val annotationClass = annotation.getType().getConstructor().getDeclarationDescriptor() as ClassDescriptor
 
                 if (!excluded.contains(DescriptorUtils.getFqNameSafe(annotationClass))) {
-                    append(renderAnnotation(annotation)).append(" ")
+                    append(renderAnnotation(annotation, applicability)).append(" ")
                 }
             }
         }
@@ -356,8 +357,11 @@ internal class DescriptorRendererImpl(
         }
     }
 
-    override fun renderAnnotation(annotation: AnnotationDescriptor): String {
+    override fun renderAnnotation(annotation: AnnotationDescriptor, applicability: AnnotationApplicability?): String {
         return StringBuilder {
+            if (applicability != null) {
+                append("@" + applicability.renderName + ":")
+            }
             append(renderType(annotation.getType()))
             if (verbose) {
                 renderAndSortAnnotationArguments(annotation).joinTo(this, ", ", "(", ")")
