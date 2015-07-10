@@ -142,6 +142,7 @@ public class DefaultErrorMessages {
         MAP.put(INAPPLICABLE_GET_TARGET, "''@get:'' annotations could be applied only to property declarations");
         MAP.put(INAPPLICABLE_SET_TARGET, "''@set:'' annotations could be applied only to property declarations");
         MAP.put(INAPPLICABLE_SET_TARGET_PROPERTY_IMMUTABLE, "Property must be mutable");
+        MAP.put(INAPPLICABLE_PROPERTY_TARGET, "''@property:'' annotations could be applied only to property declarations");
 
         MAP.put(REDUNDANT_MODIFIER, "Modifier ''{0}'' is redundant because ''{1}'' is present", TO_STRING, TO_STRING);
         MAP.put(ABSTRACT_MODIFIER_IN_TRAIT, "Modifier ''abstract'' is redundant in interface");

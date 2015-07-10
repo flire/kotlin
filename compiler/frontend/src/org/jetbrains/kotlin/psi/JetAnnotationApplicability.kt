@@ -40,6 +40,7 @@ public class JetAnnotationApplicability : JetElementImplStub<KotlinPlaceHolderSt
             JetTokens.FILE_KEYWORD -> AnnotationApplicability.FILE
             JetTokens.GET_KEYWORD -> AnnotationApplicability.PROPERTY_GETTER
             JetTokens.SET_KEYWORD -> AnnotationApplicability.PROPERTY_SETTER
+            JetTokens.PROPERTY_KEYWORD -> AnnotationApplicability.PROPERTY
             else -> throw IllegalStateException("Unknown annotation target " + node.getText())
         }
     }
