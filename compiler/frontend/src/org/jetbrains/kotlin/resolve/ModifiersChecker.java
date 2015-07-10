@@ -359,7 +359,7 @@ public class ModifiersChecker {
 
         PropertyDescriptor propertyDescriptor = (PropertyDescriptor) descriptor;
         if (Boolean.FALSE.equals(trace.getBindingContext().get(BindingContext.BACKING_FIELD_REQUIRED, propertyDescriptor))) {
-            reportAnnotationTargetNotApplicable(annotation, INAPPLICABLE_FIELD_TARGET);
+            reportAnnotationTargetNotApplicable(annotation, INAPPLICABLE_FIELD_TARGET_NO_BACKING_FIELD);
         }
     }
 

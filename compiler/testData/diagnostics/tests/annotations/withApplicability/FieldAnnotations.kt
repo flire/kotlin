@@ -13,10 +13,10 @@ class SomeClass {
     @field:[Ann]
     protected val simplePropertyWithAnnotationList: String = "text"
 
-    <!INAPPLICABLE_FIELD_TARGET!>@field:Ann<!>
+    <!INAPPLICABLE_FIELD_TARGET_NO_BACKING_FIELD!>@field:Ann<!>
     protected val delegatedProperty: String by CustomDelegate()
 
-    <!INAPPLICABLE_FIELD_TARGET!>@field:Ann<!>
+    <!INAPPLICABLE_FIELD_TARGET_NO_BACKING_FIELD!>@field:Ann<!>
     val propertyWithCustomGetter: Int
         get() = 5
 
