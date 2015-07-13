@@ -19,6 +19,7 @@ package kotlin.reflect.jvm.internal
 import org.jetbrains.kotlin.descriptors.ParameterDescriptor
 import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor
 import kotlin.reflect.KParameter
+import kotlin.reflect.KType
 
 class KParameterImpl(
         callable: KCallableImpl<*>,
@@ -59,4 +60,7 @@ class KParameterImpl(
         val name = valueParameter.getName()
         return if (name.isSpecial()) null else name.asString()
     }
+
+    override val type: KType
+        get() = KTypeImpl(descriptor.getType())
 }
