@@ -137,12 +137,7 @@ public abstract class OverrideImplementMethodsHandler : LanguageCodeInsightActio
 
         public fun generateMethods(editor: Editor, classOrObject: JetClassOrObject, selectedElements: List<DescriptorClassMember>) {
             runWriteAction {
-                var body = classOrObject.getBody()
-                if (body == null) {
-                    val psiFactory = JetPsiFactory(classOrObject)
-                    classOrObject.add(psiFactory.createWhiteSpace())
-                    body = classOrObject.add(psiFactory.createEmptyClassBody()) as JetClassBody
-                }
+                val body = classOrObject.getOrCreateBody()
 
                 var afterAnchor = findInsertAfterAnchor(editor, body)
 
@@ -152,7 +147,7 @@ public abstract class OverrideImplementMethodsHandler : LanguageCodeInsightActio
 
                 val elementsToCompact = ArrayList<JetElement>()
                 for (element in generateOverridingMembers(selectedElements, classOrObject)) {
-                    val added = body!!.addAfter(element, afterAnchor)
+                    val added = body.addAfter(element, afterAnchor)
 
                     if (firstGenerated == null) {
                         firstGenerated = added
