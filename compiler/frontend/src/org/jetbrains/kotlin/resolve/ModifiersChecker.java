@@ -337,14 +337,20 @@ public class ModifiersChecker {
                     reportIfNotPropertyDescriptor(descriptor, annotation, INAPPLICABLE_PROPERTY_TARGET);
                     break;
                 case PROPERTY_GETTER:
-                    reportIfNotPropertyDescriptor(descriptor, annotation, INAPPLICABLE_GET_TARGET);
+                    if (!(descriptor instanceof PropertyDescriptor) && !(descriptor instanceof PropertyGetterDescriptor)) {
+                        reportAnnotationTargetNotApplicable(annotation, INAPPLICABLE_GET_TARGET);
+                    }
                     break;
                 case PROPERTY_SETTER: {
-                    if (reportIfNotPropertyDescriptor(descriptor, annotation, INAPPLICABLE_SET_TARGET)) break;
+                    if (!(descriptor instanceof PropertyDescriptor) && !(descriptor instanceof PropertySetterDescriptor)) {
+                        reportAnnotationTargetNotApplicable(annotation, INAPPLICABLE_SET_TARGET);
+                        break;
+                    }
 
-                    PropertyDescriptor propertyDescriptor = (PropertyDescriptor) descriptor;
-                    if (!propertyDescriptor.isVar()) {
-                        reportAnnotationTargetNotApplicable(annotation, INAPPLICABLE_SET_TARGET_PROPERTY_IMMUTABLE);
+                    if (descriptor instanceof PropertyDescriptor) {
+                        if (!((PropertyDescriptor) descriptor).isVar()) {
+                            reportAnnotationTargetNotApplicable(annotation, INAPPLICABLE_SET_TARGET_PROPERTY_IMMUTABLE);
+                        }
                     }
                     break;
                 }
