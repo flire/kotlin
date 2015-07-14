@@ -12,7 +12,8 @@ JetFile: nonFIleAnnotationBeforePackage.kt
     PsiWhiteSpace('\n')
     ANNOTATION_ENTRY
       PsiElement(AT)('@')
-      PsiElement(file)('file')
+      ANNOTATION_TARGET
+        PsiElement(file)('file')
       PsiWhiteSpace(' ')
       PsiErrorElement:Expecting "file:" prefix for file annotations
         PsiElement(AT)('@')
