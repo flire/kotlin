@@ -48,6 +48,7 @@ import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
 import org.jetbrains.kotlin.resolve.lazy.descriptors.LazyClassDescriptor
 import org.jetbrains.kotlin.resolve.scopes.ChainedScope
 import org.jetbrains.kotlin.resolve.scopes.JetScope
+import org.jetbrains.kotlin.resolve.util.getScopeAndDataFlowForAnalyzeFragment
 import org.jetbrains.kotlin.types.TypeUtils
 import java.util.HashMap
 
