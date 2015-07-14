@@ -254,7 +254,7 @@ public class DeclarationsChecker {
             checkTraitModifiers(aClass);
             checkConstructorInTrait(aClass);
         }
-        else if (aClass.isAnnotation()) {
+        else if (classDescriptor.getKind() == ClassKind.ANNOTATION_CLASS) {
             checkAnnotationClassWithBody(aClass);
             checkValOnAnnotationParameter(aClass);
         }
