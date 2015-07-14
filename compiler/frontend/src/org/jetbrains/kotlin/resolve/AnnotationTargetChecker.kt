@@ -27,32 +27,45 @@ import org.jetbrains.kotlin.resolve.constants.ArrayValue
 import org.jetbrains.kotlin.resolve.constants.EnumValue
 import org.jetbrains.kotlin.types.JetType
 import org.jetbrains.kotlin.types.TypeUtils
+import java.lang.annotation.ElementType
 import java.util.*
 
 public object AnnotationTargetChecker {
 
     // NOTE: this enum must have the same entries with kotlin.annotation.AnnotationTarget
-    public enum class Target(val description: String, val isDefault: Boolean = true) {
-        PACKAGE("package"),
-        CLASSIFIER("classifier"),
-        ANNOTATION_CLASS("annotation class"),
-        TYPE_PARAMETER("type parameter", false),
+    public enum class Target(val description: String, val mapped: ElementType? = null, val isDefault: Boolean = true) {
+        PACKAGE("package", ElementType.PACKAGE),
+        CLASSIFIER("classifier", ElementType.TYPE),
+        ANNOTATION_CLASS("annotation class", ElementType.ANNOTATION_TYPE),
+        TYPE_PARAMETER("type parameter", null, false),
         PROPERTY("property"),
-        FIELD("field"),
-        LOCAL_VARIABLE("local variable"),
-        VALUE_PARAMETER("value parameter"),
-        CONSTRUCTOR("constructor"),
-        FUNCTION("function"),
-        PROPERTY_GETTER("getter"),
-        PROPERTY_SETTER("setter"),
-        TYPE("type usage", false),
-        EXPRESSION("expression", false),
-        FILE("file", false)
+        FIELD("field", ElementType.FIELD),
+        LOCAL_VARIABLE("local variable", ElementType.LOCAL_VARIABLE),
+        VALUE_PARAMETER("value parameter", ElementType.PARAMETER),
+        CONSTRUCTOR("constructor", ElementType.CONSTRUCTOR),
+        FUNCTION("function", ElementType.METHOD),
+        PROPERTY_GETTER("getter", ElementType.METHOD),
+        PROPERTY_SETTER("setter", ElementType.METHOD),
+        TYPE("type usage", null, false),
+        EXPRESSION("expression", null, false),
+        FILE("file", null, false);
+
+        companion object {
+
+            private val map = HashMap<String, Target>()
+            init {
+                for (target in Target.values()) {
+                    map[target.name()] = target
+                }
+            }
+
+            fun valueOrNull(name: String): Target? = map[name]
+        }
     }
 
-    private val DEFAULT_TARGET_LIST = Target.values().filter { it.isDefault }.map { it.name() }
+    private val DEFAULT_TARGET_LIST = Target.values().filter { it.isDefault }.toSet()
 
-    private val ALL_TARGET_LIST = Target.values().map { it.name() }
+    private val ALL_TARGET_LIST = Target.values().toSet()
 
     public fun check(annotated: JetAnnotated, trace: BindingTrace) {
         if (annotated is JetTypeParameter) return // TODO: support type parameter annotations
@@ -91,22 +104,28 @@ public object AnnotationTargetChecker {
         }
     }
 
-    private fun possibleTargetList(entry: JetAnnotationEntry, trace: BindingTrace): List<String> {
+    public fun possibleTargetList(classDescriptor: ClassDescriptor): Set<Target>? {
+        val targetEntryDescriptor = classDescriptor.getAnnotations().findAnnotation(KotlinBuiltIns.FQ_NAMES.target)
+                                    ?: return null
+        val valueArguments = targetEntryDescriptor.getAllValueArguments()
+        val valueArgument = valueArguments.entrySet().firstOrNull()?.getValue() as? ArrayValue ?: return null
+        return valueArgument.value.filterIsInstance<EnumValue>().map {
+            Target.valueOrNull(it.value.getName().asString())
+        }.filterNotNull().toSet()
+    }
+
+    private fun possibleTargetList(entry: JetAnnotationEntry, trace: BindingTrace): Set<Target> {
         val descriptor = trace.get(BindingContext.ANNOTATION, entry) ?: return DEFAULT_TARGET_LIST
         // For descriptor with error type, all targets are considered as possible
         if (descriptor.getType().isError()) return ALL_TARGET_LIST
         val classDescriptor = TypeUtils.getClassDescriptor(descriptor.getType()) ?: return DEFAULT_TARGET_LIST
-        val targetEntryDescriptor = classDescriptor.getAnnotations().findAnnotation(KotlinBuiltIns.FQ_NAMES.target)
-                                    ?: return DEFAULT_TARGET_LIST
-        val valueArguments = targetEntryDescriptor.getAllValueArguments()
-        val valueArgument = valueArguments.entrySet().firstOrNull()?.getValue() as? ArrayValue ?: return DEFAULT_TARGET_LIST
-        return valueArgument.value.filterIsInstance<EnumValue>().map { it.value.getName().asString() }
+        return possibleTargetList(classDescriptor) ?: DEFAULT_TARGET_LIST
     }
 
     private fun checkAnnotationEntry(entry: JetAnnotationEntry, actualTargets: List<Target>, trace: BindingTrace) {
         val possibleTargets = possibleTargetList(entry, trace)
         for (actualTarget in actualTargets) {
-            if (actualTarget.name() in possibleTargets) return
+            if (actualTarget in possibleTargets) return
         }
         trace.report(Errors.WRONG_ANNOTATION_TARGET.on(entry, actualTargets.firstOrNull()?.description ?: "unidentified target"))
     }
