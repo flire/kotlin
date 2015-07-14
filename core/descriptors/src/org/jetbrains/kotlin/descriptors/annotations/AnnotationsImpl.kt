@@ -23,20 +23,20 @@ import kotlin.platform.platformStatic
 
 public class AnnotationsImpl : Annotations {
     private val annotations: List<AnnotationDescriptor>
-    private val annotationsWithApplicability: List<Pair<AnnotationDescriptor, AnnotationApplicability?>>
+    private val targetedAnnotations: List<AnnotationWithTarget>
 
     constructor(annotations: List<AnnotationDescriptor>) {
         this.annotations = annotations
-        this.annotationsWithApplicability = annotations.map { it to null }
+        this.targetedAnnotations = annotations.map { AnnotationWithTarget(it, null) }
     }
 
-    // List<AnnotationDescriptor> and List<Pair<AnnotationDescriptor, AnnotationApplicability?>> have the same signature
+    // List<AnnotationDescriptor> and List<AnnotationWithTarget> have the same signature
     private constructor(
-            annotationsWithApplicability: List<Pair<AnnotationDescriptor, AnnotationApplicability?>>,
+            targetedAnnotations: List<AnnotationWithTarget>,
             @suppress("UNUSED_PARAMETER") i: Int
     ) {
-        this.annotationsWithApplicability = annotationsWithApplicability
-        this.annotations = annotationsWithApplicability.filter { it.second == null }.map { it.first }
+        this.targetedAnnotations = targetedAnnotations
+        this.annotations = targetedAnnotations.filter { it.target == null }.map { it.annotation }
     }
 
     override fun isEmpty() = annotations.isEmpty()
@@ -46,13 +46,13 @@ public class AnnotationsImpl : Annotations {
         descriptor is ClassDescriptor && fqName.toUnsafe() == DescriptorUtils.getFqName(descriptor)
     }
 
-    override fun getAnnotationsWithApplicability(): List<AnnotationWithApplicability> {
-        return annotationsWithApplicability
-                .filter { it.second != null }
-                .map { AnnotationWithApplicability(it.first, it.second!!) }
+    override fun getUseSiteTargetedAnnotations(): List<AnnotationWithTarget> {
+        return targetedAnnotations
+                .filter { it.target != null }
+                .map { AnnotationWithTarget(it.annotation, it.target!!) }
     }
 
-    override fun getAllAnnotations() = annotationsWithApplicability
+    override fun getAllAnnotations() = targetedAnnotations
 
     override fun findExternalAnnotation(fqName: FqName) = null
 
@@ -62,8 +62,8 @@ public class AnnotationsImpl : Annotations {
 
     companion object {
         platformStatic
-        public fun create(annotationsWithApplicability: List<Pair<AnnotationDescriptor, AnnotationApplicability?>>): AnnotationsImpl {
-            return AnnotationsImpl(annotationsWithApplicability, 0)
+        public fun create(annotationsWithTargets: List<AnnotationWithTarget>): AnnotationsImpl {
+            return AnnotationsImpl(annotationsWithTargets, 0)
         }
     }
 }

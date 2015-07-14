@@ -18,13 +18,13 @@ package org.jetbrains.kotlin.resolve.lazy.descriptors
 
 import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor
 import org.jetbrains.kotlin.descriptors.annotations.AnnotationDescriptor
-import org.jetbrains.kotlin.descriptors.annotations.AnnotationApplicability
-import org.jetbrains.kotlin.descriptors.annotations.AnnotationWithApplicability
+import org.jetbrains.kotlin.descriptors.annotations.AnnotationUseSiteTarget
+import org.jetbrains.kotlin.descriptors.annotations.AnnotationWithTarget
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.lexer.JetTokens
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.JetAnnotationEntry
-import org.jetbrains.kotlin.psi.JetAnnotationApplicability
+import org.jetbrains.kotlin.psi.JetAnnotationUseSiteTarget
 import org.jetbrains.kotlin.resolve.AnnotationResolver
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.BindingTrace
@@ -60,13 +60,8 @@ public class LazyAnnotations(
         entry: JetAnnotationEntry ->
 
         val descriptor = LazyAnnotationDescriptor(c, entry)
-        val applicability = entry.getApplicability()?.getAnnotationApplicability()
-
-        if (applicability != null) {
-            c.trace.record(BindingContext.ANNOTATION_WITH_APPLICABILITY, entry, AnnotationWithApplicability(descriptor, applicability))
-        }
-
-        descriptor to applicability
+        val target = entry.getUseSiteTarget()?.getAnnotationUseSiteTarget()
+        AnnotationWithTarget(descriptor, target)
     }
 
     override fun findAnnotation(fqName: FqName): AnnotationDescriptor? {
@@ -88,12 +83,12 @@ public class LazyAnnotations(
 
     override fun findExternalAnnotation(fqName: FqName) = null
 
-    override fun getAnnotationsWithApplicability(): List<AnnotationWithApplicability> {
+    override fun getUseSiteTargetedAnnotations(): List<AnnotationWithTarget> {
         return annotationEntries
                 .asSequence()
                 .map {
-                    val (descriptor, applicability) = annotation(it)
-                    if (applicability == null) null else AnnotationWithApplicability(descriptor, applicability)
+                    val (descriptor, target) = annotation(it)
+                    if (target == null) null else AnnotationWithTarget(descriptor, target)
                 }.filterNotNull().toList()
     }
 
@@ -103,8 +98,8 @@ public class LazyAnnotations(
         return annotationEntries
                 .asSequence()
                 .map {
-                    val (descriptor, applicability) = annotation(it)
-                    if (applicability == null) descriptor else null // Filter out annotations with applicability
+                    val (descriptor, target) = annotation(it)
+                    if (target == null) descriptor else null // Filter out annotations with target
                 }.filterNotNull().iterator()
     }
 

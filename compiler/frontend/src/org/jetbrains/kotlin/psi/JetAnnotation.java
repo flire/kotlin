@@ -44,7 +44,7 @@ public class JetAnnotation extends JetElementImplStub<KotlinPlaceHolderStub<JetA
     }
 
     @Nullable
-    public JetAnnotationApplicability getApplicability() {
+    public JetAnnotationUseSiteTarget getUseSiteTarget() {
         return getStubOrPsiChild(JetStubElementTypes.ANNOTATION_TARGET);
     }
 }

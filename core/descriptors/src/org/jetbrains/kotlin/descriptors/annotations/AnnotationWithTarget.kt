@@ -18,12 +18,12 @@ package org.jetbrains.kotlin.descriptors.annotations
 
 import org.jetbrains.kotlin.name.FqName
 
-public class AnnotationWithApplicability(val annotation: AnnotationDescriptor, val applicability: AnnotationApplicability)
+public data class AnnotationWithTarget(val annotation: AnnotationDescriptor, val target: AnnotationUseSiteTarget?)
 
 public class UseSiteTargetedAnnotations(
         private val original: Annotations,
         private val annotated: Annotated,
-        private val acceptedApplicability: AnnotationApplicability
+        private val acceptedTarget: AnnotationUseSiteTarget
 ) : Annotations {
 
     override fun isEmpty() = original.isEmpty()
@@ -32,15 +32,15 @@ public class UseSiteTargetedAnnotations(
 
     override fun findExternalAnnotation(fqName: FqName) = original.findExternalAnnotation(fqName)
 
-    private fun getAdditionalAnnotationsWithApplicability() = annotated.getAnnotations()
-            .getAnnotationsWithApplicability().filter { it.applicability == acceptedApplicability }
+    private fun getAdditionalTargetedAnnotations() = annotated.getAnnotations()
+            .getUseSiteTargetedAnnotations().filter { it.target == acceptedTarget }
 
-    override fun getAnnotationsWithApplicability(): List<AnnotationWithApplicability> {
-        return original.getAnnotationsWithApplicability() + getAdditionalAnnotationsWithApplicability()
+    override fun getUseSiteTargetedAnnotations(): List<AnnotationWithTarget> {
+        return original.getUseSiteTargetedAnnotations() + getAdditionalTargetedAnnotations()
     }
 
-    override fun getAllAnnotations(): List<Pair<AnnotationDescriptor, AnnotationApplicability?>> {
-        return original.getAllAnnotations() + getAdditionalAnnotationsWithApplicability().map { it.annotation to it.applicability }
+    override fun getAllAnnotations(): List<AnnotationWithTarget> {
+        return original.getAllAnnotations() + getAdditionalTargetedAnnotations()
     }
 
     override fun iterator() = original.iterator()

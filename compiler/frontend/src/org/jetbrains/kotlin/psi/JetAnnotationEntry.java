@@ -109,13 +109,13 @@ public class JetAnnotationEntry extends JetElementImplStub<KotlinAnnotationEntry
     }
 
     @Nullable
-    public JetAnnotationApplicability getApplicability() {
-        JetAnnotationApplicability target = getStubOrPsiChild(JetStubElementTypes.ANNOTATION_TARGET);
+    public JetAnnotationUseSiteTarget getUseSiteTarget() {
+        JetAnnotationUseSiteTarget target = getStubOrPsiChild(JetStubElementTypes.ANNOTATION_TARGET);
 
         if (target == null) {
             PsiElement parent = getStubOrPsiParent();
             if (parent instanceof JetAnnotation) {
-                return ((JetAnnotation) parent).getApplicability();
+                return ((JetAnnotation) parent).getUseSiteTarget();
             }
         }
 

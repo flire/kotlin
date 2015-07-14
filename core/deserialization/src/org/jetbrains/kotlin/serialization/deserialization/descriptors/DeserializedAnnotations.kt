@@ -18,7 +18,7 @@ package org.jetbrains.kotlin.serialization.deserialization.descriptors
 
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.annotations.AnnotationDescriptor
-import org.jetbrains.kotlin.descriptors.annotations.AnnotationWithApplicability
+import org.jetbrains.kotlin.descriptors.annotations.AnnotationWithTarget
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.resolve.DescriptorUtils
@@ -39,9 +39,9 @@ class DeserializedAnnotations(
         descriptor is ClassDescriptor && fqName.equalsTo(DescriptorUtils.getFqName(descriptor))
     }
 
-    override fun getAnnotationsWithApplicability() = emptyList<AnnotationWithApplicability>()
+    override fun getUseSiteTargetedAnnotations() = emptyList<AnnotationWithTarget>()
 
-    override fun getAllAnnotations() = this.map { it to null }
+    override fun getAllAnnotations() = this.map { AnnotationWithTarget(it, null) }
 
     override fun findExternalAnnotation(fqName: FqName) = null
 

@@ -16,7 +16,7 @@
 
 package org.jetbrains.kotlin.descriptors.annotations
 
-public enum class AnnotationApplicability(renderName: String? = null) {
+public enum class AnnotationUseSiteTarget(renderName: String? = null) {
     FIELD(),
     FILE(),
     PROPERTY(),

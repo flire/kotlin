@@ -34,7 +34,7 @@ import org.jetbrains.kotlin.codegen.optimization.OptimizationMethodVisitor;
 import org.jetbrains.kotlin.codegen.state.GenerationState;
 import org.jetbrains.kotlin.codegen.state.JetTypeMapper;
 import org.jetbrains.kotlin.descriptors.*;
-import org.jetbrains.kotlin.descriptors.annotations.AnnotationApplicability;
+import org.jetbrains.kotlin.descriptors.annotations.AnnotationUseSiteTarget;
 import org.jetbrains.kotlin.descriptors.annotations.AnnotationDescriptor;
 import org.jetbrains.kotlin.load.kotlin.nativeDeclarations.NativeDeclarationsPackage;
 import org.jetbrains.kotlin.name.FqName;
@@ -132,17 +132,17 @@ public class FunctionCodegen {
     public void generateMethod(
             @NotNull JvmDeclarationOrigin origin,
             @NotNull FunctionDescriptor descriptor,
-            @Nullable AnnotationApplicability applicability,
+            @Nullable AnnotationUseSiteTarget target,
             @NotNull FunctionGenerationStrategy strategy
     ) {
-        generateMethod(origin, descriptor, owner.intoFunction(descriptor), applicability, strategy);
+        generateMethod(origin, descriptor, owner.intoFunction(descriptor), target, strategy);
     }
 
     public void generateMethod(
             @NotNull JvmDeclarationOrigin origin,
             @NotNull FunctionDescriptor functionDescriptor,
             @NotNull MethodContext methodContext,
-            @Nullable AnnotationApplicability applicability,
+            @Nullable AnnotationUseSiteTarget target,
             @NotNull FunctionGenerationStrategy strategy
     ) {
         OwnerKind contextKind = methodContext.getContextKind();
@@ -171,7 +171,7 @@ public class FunctionCodegen {
             v.getSerializationBindings().put(METHOD_FOR_FUNCTION, functionDescriptor, asmMethod);
         }
 
-        AnnotationCodegen.forMethod(mv, typeMapper).genAnnotations(functionDescriptor, asmMethod.getReturnType(), applicability);
+        AnnotationCodegen.forMethod(mv, typeMapper).genAnnotations(functionDescriptor, asmMethod.getReturnType(), target);
         generateParameterAnnotations(functionDescriptor, mv, typeMapper.mapSignature(functionDescriptor));
 
         if (state.getClassBuilderMode() != ClassBuilderMode.LIGHT_CLASSES) {

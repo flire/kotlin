@@ -31,7 +31,7 @@ import org.jetbrains.kotlin.resolve.calls.tasks.ExplicitReceiverKind
 import org.jetbrains.kotlin.types.TypeUtils
 import org.jetbrains.kotlin.resolve.calls.model.ResolvedValueArgument
 import org.jetbrains.kotlin.JetNodeTypes
-import org.jetbrains.kotlin.descriptors.annotations.AnnotationApplicability
+import org.jetbrains.kotlin.descriptors.annotations.AnnotationUseSiteTarget
 import org.jetbrains.kotlin.diagnostics.DiagnosticUtils
 import java.math.BigInteger
 import org.jetbrains.kotlin.diagnostics.Errors

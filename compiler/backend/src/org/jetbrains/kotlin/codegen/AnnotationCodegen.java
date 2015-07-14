@@ -36,7 +36,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.*;
 
-import static org.jetbrains.kotlin.descriptors.annotations.AnnotationApplicability.*;
 import static org.jetbrains.kotlin.resolve.descriptorUtil.DescriptorUtilPackage.getClassObjectType;
 
 public abstract class AnnotationCodegen {
@@ -85,7 +84,7 @@ public abstract class AnnotationCodegen {
         genAnnotations(annotated, returnType, null);
     }
 
-    public void genAnnotations(@Nullable Annotated annotated, @Nullable Type returnType, @Nullable AnnotationApplicability applicability) {
+    public void genAnnotations(@Nullable Annotated annotated, @Nullable Type returnType, @Nullable AnnotationUseSiteTarget target) {
         if (annotated == null) {
             return;
         }
@@ -105,11 +104,11 @@ public abstract class AnnotationCodegen {
             }
         }
 
-        if (applicability != null) {
-            for (AnnotationWithApplicability annotationWithApplicability : annotations.getAnnotationsWithApplicability()) {
-                if (applicability != annotationWithApplicability.getApplicability()) continue;
+        if (target != null) {
+            for (AnnotationWithTarget annotationWithTarget : annotations.getUseSiteTargetedAnnotations()) {
+                if (target != annotationWithTarget.getTarget()) continue;
 
-                String descriptor = genAnnotation(annotationWithApplicability.getAnnotation());
+                String descriptor = genAnnotation(annotationWithTarget.getAnnotation());
                 if (descriptor != null) {
                     annotationDescriptorsAlreadyPresent.add(descriptor);
                 }

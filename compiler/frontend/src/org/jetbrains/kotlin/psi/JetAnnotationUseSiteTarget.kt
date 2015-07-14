@@ -18,29 +18,29 @@ package org.jetbrains.kotlin.psi
 
 import com.intellij.lang.ASTNode
 import com.intellij.psi.impl.source.tree.TreeElement
-import org.jetbrains.kotlin.descriptors.annotations.AnnotationApplicability
+import org.jetbrains.kotlin.descriptors.annotations.AnnotationUseSiteTarget
 import org.jetbrains.kotlin.lexer.JetKeywordToken
 import org.jetbrains.kotlin.lexer.JetTokens
 import org.jetbrains.kotlin.psi.stubs.KotlinAnnotationEntryStub
 import org.jetbrains.kotlin.psi.stubs.KotlinPlaceHolderStub
 import org.jetbrains.kotlin.psi.stubs.elements.JetStubElementTypes
 
-public class JetAnnotationApplicability : JetElementImplStub<KotlinPlaceHolderStub<JetAnnotationApplicability>> {
+public class JetAnnotationUseSiteTarget : JetElementImplStub<KotlinPlaceHolderStub<JetAnnotationUseSiteTarget>> {
 
     constructor(node: ASTNode): super(node)
 
-    constructor(stub: KotlinPlaceHolderStub<JetAnnotationApplicability>) : super(stub, JetStubElementTypes.ANNOTATION_TARGET)
+    constructor(stub: KotlinPlaceHolderStub<JetAnnotationUseSiteTarget>) : super(stub, JetStubElementTypes.ANNOTATION_TARGET)
 
-    override fun <R, D> accept(visitor: JetVisitor<R, D>, data: D) = visitor.visitAnnotationTarget(this, data)
+    override fun <R, D> accept(visitor: JetVisitor<R, D>, data: D) = visitor.visitAnnotationUseSiteTarget(this, data)
 
-    public fun getAnnotationApplicability(): AnnotationApplicability {
+    public fun getAnnotationUseSiteTarget(): AnnotationUseSiteTarget {
         val node = getFirstChild().getNode()
         return when (node.getElementType()) {
-            JetTokens.FIELD_KEYWORD -> AnnotationApplicability.FIELD
-            JetTokens.FILE_KEYWORD -> AnnotationApplicability.FILE
-            JetTokens.GET_KEYWORD -> AnnotationApplicability.PROPERTY_GETTER
-            JetTokens.SET_KEYWORD -> AnnotationApplicability.PROPERTY_SETTER
-            JetTokens.PROPERTY_KEYWORD -> AnnotationApplicability.PROPERTY
+            JetTokens.FIELD_KEYWORD -> AnnotationUseSiteTarget.FIELD
+            JetTokens.FILE_KEYWORD -> AnnotationUseSiteTarget.FILE
+            JetTokens.GET_KEYWORD -> AnnotationUseSiteTarget.PROPERTY_GETTER
+            JetTokens.SET_KEYWORD -> AnnotationUseSiteTarget.PROPERTY_SETTER
+            JetTokens.PROPERTY_KEYWORD -> AnnotationUseSiteTarget.PROPERTY
             else -> throw IllegalStateException("Unknown annotation target " + node.getText())
         }
     }

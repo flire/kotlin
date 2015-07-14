@@ -62,7 +62,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.jetbrains.kotlin.diagnostics.Errors.NOT_AN_ANNOTATION_CLASS;
-import static org.jetbrains.kotlin.resolve.BindingContext.ANNOTATION_DESCRIPTOR_TO_PSI_ELEMENT;
 import static org.jetbrains.kotlin.types.TypeUtils.NO_EXPECTED_TYPE;
 
 public class AnnotationResolver {
@@ -144,8 +143,7 @@ public class AnnotationResolver {
             boolean shouldResolveArguments
     ) {
         if (annotationEntryElements.isEmpty()) return Annotations.EMPTY;
-        List<kotlin.Pair<AnnotationDescriptor, AnnotationApplicability>> result =
-                new ArrayList<kotlin.Pair<AnnotationDescriptor, AnnotationApplicability>>(0);
+        List<AnnotationWithTarget> result = new ArrayList<AnnotationWithTarget>(0);
 
         for (JetAnnotationEntry entryElement : annotationEntryElements) {
             AnnotationDescriptor descriptor = trace.get(BindingContext.ANNOTATION, entryElement);
@@ -156,12 +154,12 @@ public class AnnotationResolver {
                 ForceResolveUtil.forceResolveAllContents(descriptor);
             }
 
-            JetAnnotationApplicability applicability = entryElement.getApplicability();
-            if (applicability != null) {
-                result.add(KotlinPackage.to(descriptor, applicability.getAnnotationApplicability()));
+            JetAnnotationUseSiteTarget target = entryElement.getUseSiteTarget();
+            if (target != null) {
+                result.add(new AnnotationWithTarget(descriptor, target.getAnnotationUseSiteTarget()));
             }
             else {
-                result.add(KotlinPackage.to(descriptor, (AnnotationApplicability) null));
+                result.add(new AnnotationWithTarget(descriptor, null));
             }
         }
         return AnnotationsImpl.create(result);

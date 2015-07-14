@@ -26,8 +26,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.kotlin.descriptors.*;
 import org.jetbrains.kotlin.descriptors.annotations.AnnotationDescriptor;
-import org.jetbrains.kotlin.descriptors.annotations.AnnotationApplicability;
-import org.jetbrains.kotlin.descriptors.annotations.AnnotationWithApplicability;
+import org.jetbrains.kotlin.descriptors.annotations.AnnotationUseSiteTarget;
+import org.jetbrains.kotlin.descriptors.annotations.AnnotationWithTarget;
 import org.jetbrains.kotlin.diagnostics.*;
 import org.jetbrains.kotlin.lexer.JetModifierKeywordToken;
 import org.jetbrains.kotlin.lexer.JetTokens;
@@ -151,7 +151,7 @@ public class ModifiersChecker {
             checkVarargsModifiers(modifierListOwner, descriptor);
         }
         checkPlatformNameApplicability(descriptor);
-        checkAnnotationApplicability(descriptor);
+        checkAnnotationUseSiteTargetApplicability(descriptor);
         runDeclarationCheckers(modifierListOwner, descriptor);
     }
 
@@ -165,7 +165,7 @@ public class ModifiersChecker {
         reportIllegalModalityModifiers(modifierListOwner);
         reportIllegalVisibilityModifiers(modifierListOwner);
         checkPlatformNameApplicability(descriptor);
-        checkAnnotationApplicability(descriptor);
+        checkAnnotationUseSiteTargetApplicability(descriptor);
         runDeclarationCheckers(modifierListOwner, descriptor);
     }
 
@@ -324,14 +324,15 @@ public class ModifiersChecker {
 
     }
 
-    private void checkAnnotationApplicability(@NotNull DeclarationDescriptor descriptor) {
-        for (AnnotationWithApplicability annotationWithApplicability : descriptor.getAnnotations().getAnnotationsWithApplicability()) {
-            AnnotationDescriptor annotation = annotationWithApplicability.getAnnotation();
-            AnnotationApplicability applicability = annotationWithApplicability.getApplicability();
+    private void checkAnnotationUseSiteTargetApplicability(@NotNull DeclarationDescriptor descriptor) {
+        for (AnnotationWithTarget annotationWithTarget : descriptor.getAnnotations().getUseSiteTargetedAnnotations()) {
+            AnnotationDescriptor annotation = annotationWithTarget.getAnnotation();
+            AnnotationUseSiteTarget target = annotationWithTarget.getTarget();
+            if (target == null) return;
 
-            switch (applicability) {
+            switch (target) {
                 case FIELD:
-                    checkAnnotationFieldApplicability(descriptor, annotation);
+                    checkFieldTargetApplicability(descriptor, annotation);
                     break;
                 case PROPERTY:
                     reportIfNotPropertyDescriptor(descriptor, annotation, INAPPLICABLE_PROPERTY_TARGET);
@@ -360,7 +361,7 @@ public class ModifiersChecker {
         }
     }
 
-    private void checkAnnotationFieldApplicability(DeclarationDescriptor descriptor, AnnotationDescriptor annotation) {
+    private void checkFieldTargetApplicability(DeclarationDescriptor descriptor, AnnotationDescriptor annotation) {
         if (reportIfNotPropertyDescriptor(descriptor, annotation, INAPPLICABLE_FIELD_TARGET)) return;
 
         PropertyDescriptor propertyDescriptor = (PropertyDescriptor) descriptor;

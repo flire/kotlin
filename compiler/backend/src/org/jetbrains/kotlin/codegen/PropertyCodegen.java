@@ -24,7 +24,7 @@ import org.jetbrains.kotlin.codegen.context.*;
 import org.jetbrains.kotlin.codegen.state.GenerationState;
 import org.jetbrains.kotlin.codegen.state.JetTypeMapper;
 import org.jetbrains.kotlin.descriptors.*;
-import org.jetbrains.kotlin.descriptors.annotations.AnnotationApplicability;
+import org.jetbrains.kotlin.descriptors.annotations.AnnotationUseSiteTarget;
 import org.jetbrains.kotlin.load.java.JvmAbi;
 import org.jetbrains.kotlin.psi.*;
 import org.jetbrains.kotlin.psi.psiUtil.PsiUtilPackage;
@@ -294,7 +294,7 @@ public class PropertyCodegen {
 
         FieldVisitor fv = builder.newField(OtherOrigin(element, propertyDescriptor), modifiers, name, type.getDescriptor(),
                                                 typeMapper.mapFieldSignature(jetType), defaultValue);
-        AnnotationCodegen.forField(fv, typeMapper).genAnnotations(propertyDescriptor, type, AnnotationApplicability.FIELD);
+        AnnotationCodegen.forField(fv, typeMapper).genAnnotations(propertyDescriptor, type, AnnotationUseSiteTarget.FIELD);
     }
 
     private void generatePropertyDelegateAccess(JetProperty p, PropertyDescriptor propertyDescriptor) {
@@ -331,7 +331,7 @@ public class PropertyCodegen {
     }
 
     private void generateGetter(@Nullable JetNamedDeclaration p, @NotNull PropertyDescriptor descriptor, @Nullable JetPropertyAccessor getter) {
-        generateAccessor(p, getter, AnnotationApplicability.PROPERTY_GETTER,
+        generateAccessor(p, getter, AnnotationUseSiteTarget.PROPERTY_GETTER,
                          descriptor.getGetter() != null
                          ? descriptor.getGetter()
                          : DescriptorFactory.createDefaultGetter(descriptor));
@@ -340,7 +340,7 @@ public class PropertyCodegen {
     private void generateSetter(@Nullable JetNamedDeclaration p, @NotNull PropertyDescriptor descriptor, @Nullable JetPropertyAccessor setter) {
         if (!descriptor.isVar()) return;
 
-        generateAccessor(p, setter, AnnotationApplicability.PROPERTY_SETTER,
+        generateAccessor(p, setter, AnnotationUseSiteTarget.PROPERTY_SETTER,
                          descriptor.getSetter() != null
                          ? descriptor.getSetter()
                          : DescriptorFactory.createDefaultSetter(descriptor));
@@ -349,7 +349,7 @@ public class PropertyCodegen {
     private void generateAccessor(
             @Nullable JetNamedDeclaration p,
             @Nullable JetPropertyAccessor accessor,
-            @NotNull AnnotationApplicability applicability,
+            @NotNull AnnotationUseSiteTarget target,
             @NotNull PropertyAccessorDescriptor accessorDescriptor
     ) {
         FunctionGenerationStrategy strategy;
@@ -366,7 +366,7 @@ public class PropertyCodegen {
         }
 
         functionCodegen.generateMethod(OtherOrigin(accessor != null ? accessor : p, accessorDescriptor),
-                                       accessorDescriptor, applicability, strategy);
+                                       accessorDescriptor, target, strategy);
     }
 
     public static int indexOfDelegatedProperty(@NotNull JetProperty property) {

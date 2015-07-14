@@ -19,7 +19,7 @@ package org.jetbrains.kotlin.descriptors.impl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.kotlin.descriptors.*;
-import org.jetbrains.kotlin.descriptors.annotations.AnnotationApplicability;
+import org.jetbrains.kotlin.descriptors.annotations.AnnotationUseSiteTarget;
 import org.jetbrains.kotlin.descriptors.annotations.Annotations;
 import org.jetbrains.kotlin.descriptors.annotations.UseSiteTargetedAnnotations;
 import org.jetbrains.kotlin.name.Name;
@@ -49,7 +49,7 @@ public class PropertySetterDescriptorImpl extends PropertyAccessorDescriptorImpl
             @NotNull SourceElement source
     ) {
         super(modality, visibility, correspondingProperty,
-              new UseSiteTargetedAnnotations(annotations, correspondingProperty, AnnotationApplicability.PROPERTY_SETTER),
+              new UseSiteTargetedAnnotations(annotations, correspondingProperty, AnnotationUseSiteTarget.PROPERTY_SETTER),
               Name.special("<set-" + correspondingProperty.getName() + ">"), hasBody, isDefault, kind, source);
         this.original = original != null ? original : this;
     }

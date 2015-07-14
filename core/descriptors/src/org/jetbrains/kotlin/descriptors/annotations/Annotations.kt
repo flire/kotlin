@@ -28,9 +28,9 @@ public interface Annotations : Iterable<AnnotationDescriptor> {
 
     public fun findExternalAnnotation(fqName: FqName): AnnotationDescriptor?
 
-    public fun getAnnotationsWithApplicability(): List<AnnotationWithApplicability>
+    public fun getUseSiteTargetedAnnotations(): List<AnnotationWithTarget>
 
-    public fun getAllAnnotations(): List<Pair<AnnotationDescriptor, AnnotationApplicability?>>
+    public fun getAllAnnotations(): List<AnnotationWithTarget>
 
     companion object {
         public val EMPTY: Annotations = object : Annotations {
@@ -40,9 +40,9 @@ public interface Annotations : Iterable<AnnotationDescriptor> {
 
             override fun findExternalAnnotation(fqName: FqName) = null
 
-            override fun getAnnotationsWithApplicability() = emptyList<AnnotationWithApplicability>()
+            override fun getUseSiteTargetedAnnotations() = emptyList<AnnotationWithTarget>()
 
-            override fun getAllAnnotations() = emptyList<Pair<AnnotationDescriptor, AnnotationApplicability?>>()
+            override fun getAllAnnotations() = emptyList<AnnotationWithTarget>()
 
             override fun iterator() = emptyList<AnnotationDescriptor>().iterator()
 
@@ -63,12 +63,12 @@ class FilteredAnnotations(
             if (fqNameFilter(fqName)) delegate.findExternalAnnotation(fqName)
             else null
 
-    override fun getAnnotationsWithApplicability(): List<AnnotationWithApplicability> {
-        return delegate.getAnnotationsWithApplicability().filter { shouldBeReturned(it.annotation) }
+    override fun getUseSiteTargetedAnnotations(): List<AnnotationWithTarget> {
+        return delegate.getUseSiteTargetedAnnotations().filter { shouldBeReturned(it.annotation) }
     }
 
-    override fun getAllAnnotations(): List<Pair<AnnotationDescriptor, AnnotationApplicability?>> {
-        return delegate.getAllAnnotations().filter { shouldBeReturned(it.first) }
+    override fun getAllAnnotations(): List<AnnotationWithTarget> {
+        return delegate.getAllAnnotations().filter { shouldBeReturned(it.annotation) }
     }
 
     override fun iterator() = delegate.filter { shouldBeReturned(it) }.iterator()
@@ -92,11 +92,9 @@ class CompositeAnnotations(
 
     override fun findExternalAnnotation(fqName: FqName) = delegates.asSequence().map { it.findExternalAnnotation(fqName) }.filterNotNull().firstOrNull()
 
-    override fun getAnnotationsWithApplicability() = delegates.flatMap { it.getAnnotationsWithApplicability() }
+    override fun getUseSiteTargetedAnnotations() = delegates.flatMap { it.getUseSiteTargetedAnnotations() }
 
-    override fun getAllAnnotations(): List<Pair<AnnotationDescriptor, AnnotationApplicability?>> {
-        return delegates.flatMap { it.getAllAnnotations() }
-    }
+    override fun getAllAnnotations() = delegates.flatMap { it.getAllAnnotations() }
 
     override fun iterator() = delegates.asSequence().flatMap { it.asSequence() }.iterator()
 }
