@@ -16,11 +16,5 @@
 
 package org.jetbrains.kotlin.load.java.structure;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
-
-public interface JavaConstructor extends JavaMember, JavaTypeParameterListOwner {
-    @NotNull
-    List<JavaValueParameter> getValueParameters();
+public interface JavaConstructor extends JavaCallable {
 }

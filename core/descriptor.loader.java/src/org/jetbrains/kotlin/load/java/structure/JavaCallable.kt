@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-package org.jetbrains.kotlin.load.java.structure;
+package org.jetbrains.kotlin.load.java.structure
 
-import org.jetbrains.annotations.NotNull;
-
-public interface JavaMethod extends JavaCallable {
-    boolean hasAnnotationParameterDefaultValue();
-
-    @NotNull
-    JavaType getReturnType();
+public interface JavaCallable : JavaMember, JavaTypeParameterListOwner {
+    public fun getValueParameters(): List<JavaValueParameter>
 }
