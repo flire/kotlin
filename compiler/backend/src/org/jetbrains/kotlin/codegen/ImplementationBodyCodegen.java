@@ -686,7 +686,7 @@ public class ImplementationBodyCodegen extends ClassBodyCodegen {
         @Override
         public void generateComponentFunction(@NotNull FunctionDescriptor function, @NotNull final ValueParameterDescriptor parameter) {
             PsiElement originalElement = DescriptorToSourceUtils.descriptorToDeclaration(parameter);
-            functionCodegen.generateMethod(OtherOrigin(originalElement, function), function, new FunctionGenerationStrategy() {
+            functionCodegen.generateMethod(OtherOrigin(originalElement, function), function, null, new FunctionGenerationStrategy() {
                 @Override
                 public void generateBody(
                         @NotNull MethodVisitor mv,
@@ -714,7 +714,7 @@ public class ImplementationBodyCodegen extends ClassBodyCodegen {
         public void generateCopyFunction(@NotNull final FunctionDescriptor function, @NotNull List<JetParameter> constructorParameters) {
             final Type thisDescriptorType = typeMapper.mapType(descriptor);
 
-            functionCodegen.generateMethod(OtherOrigin(myClass, function), function, new FunctionGenerationStrategy() {
+            functionCodegen.generateMethod(OtherOrigin(myClass, function), function, null, new FunctionGenerationStrategy() {
                 @Override
                 public void generateBody(
                         @NotNull MethodVisitor mv,
@@ -866,7 +866,7 @@ public class ImplementationBodyCodegen extends ClassBodyCodegen {
             final FunctionDescriptor bridge = (FunctionDescriptor) entry.getValue();
             final FunctionDescriptor original = (FunctionDescriptor) entry.getKey();
             functionCodegen.generateMethod(
-                    Synthetic(null, original), bridge,
+                    Synthetic(null, original), bridge, null,
                     new FunctionGenerationStrategy.CodegenBased<FunctionDescriptor>(state, bridge) {
                         @Override
                         public void doGenerateBody(@NotNull ExpressionCodegen codegen, @NotNull JvmMethodSignature signature) {
@@ -921,7 +921,7 @@ public class ImplementationBodyCodegen extends ClassBodyCodegen {
             PropertyGetterDescriptor getter = bridge.getGetter();
             assert getter != null;
             functionCodegen.generateMethod(Synthetic(null, original.getGetter() != null ? original.getGetter() : original),
-                                           getter, new PropertyAccessorStrategy(getter));
+                                           getter, null, new PropertyAccessorStrategy(getter));
 
 
             if (bridge.isVar()) {
@@ -929,7 +929,7 @@ public class ImplementationBodyCodegen extends ClassBodyCodegen {
                 assert setter != null;
 
                 functionCodegen.generateMethod(Synthetic(null, original.getSetter() != null ? original.getSetter() : original),
-                                               setter, new PropertyAccessorStrategy(setter));
+                                               setter, null, new PropertyAccessorStrategy(setter));
             }
         }
         else {
@@ -1453,6 +1453,7 @@ public class ImplementationBodyCodegen extends ClassBodyCodegen {
         functionCodegen.generateMethod(
                 DelegationToTraitImpl(descriptorToDeclaration(traitFun), traitFun),
                 inheritedFun,
+                null,
                 new FunctionGenerationStrategy.CodegenBased<FunctionDescriptor>(state, inheritedFun) {
                     @Override
                     public void doGenerateBody(@NotNull ExpressionCodegen codegen, @NotNull JvmMethodSignature signature) {

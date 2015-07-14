@@ -108,7 +108,7 @@ public class FunctionCodegen {
                                             "in " + function.getContainingFile().getVirtualFile();
 
         if (owner.getContextKind() != OwnerKind.TRAIT_IMPL || function.hasBody()) {
-            generateMethod(OtherOrigin(function, functionDescriptor), functionDescriptor,
+            generateMethod(OtherOrigin(function, functionDescriptor), functionDescriptor, null,
                            new FunctionGenerationStrategy.FunctionDefault(state, functionDescriptor, function));
         }
 
@@ -127,14 +127,6 @@ public class FunctionCodegen {
                                                                               functionDescriptor,
                                                                               delegateFunctionDescriptor,
                                                                               owner, v);
-    }
-
-    public void generateMethod(
-            @NotNull JvmDeclarationOrigin origin,
-            @NotNull FunctionDescriptor descriptor,
-            @NotNull FunctionGenerationStrategy strategy
-    ) {
-        generateMethod(origin, descriptor, null, strategy);
     }
 
     public void generateMethod(
@@ -809,7 +801,7 @@ public class FunctionCodegen {
             final StackValue field
     ) {
         generateMethod(
-                Delegation(DescriptorToSourceUtils.descriptorToDeclaration(delegatedTo), delegateFunction), delegateFunction,
+                Delegation(DescriptorToSourceUtils.descriptorToDeclaration(delegatedTo), delegateFunction), delegateFunction, null,
                 new FunctionGenerationStrategy() {
                     @Override
                     public void generateBody(

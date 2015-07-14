@@ -97,6 +97,7 @@ public class TraitImplBodyCodegen(
         functionCodegen.generateMethod(
                 DelegationToTraitImpl(DescriptorToSourceUtils.descriptorToDeclaration(descriptor), descriptor),
                 descriptor,
+                null,
                 object : FunctionGenerationStrategy.CodegenBased<FunctionDescriptor>(state, descriptor) {
                     override fun doGenerateBody(codegen: ExpressionCodegen, signature: JvmMethodSignature) {
                         val iv = codegen.v

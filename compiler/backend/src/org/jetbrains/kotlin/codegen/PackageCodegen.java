@@ -174,7 +174,7 @@ public class PackageCodegen {
 
                     if (member instanceof DeserializedSimpleFunctionDescriptor) {
                         DeserializedSimpleFunctionDescriptor function = (DeserializedSimpleFunctionDescriptor) member;
-                        memberCodegen.functionCodegen.generateMethod(OtherOrigin(function), function,
+                        memberCodegen.functionCodegen.generateMethod(OtherOrigin(function), function, null,
                                                                      new FunctionGenerationStrategy() {
                                                                          @Override
                                                                          public void generateBody(

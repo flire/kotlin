@@ -179,7 +179,7 @@ public class ClosureCodegen extends MemberCodegen<JetElement> {
                 typeMapper.mapSignature(funDescriptor).getAsmMethod()
         );
 
-        functionCodegen.generateMethod(OtherOrigin(element, funDescriptor), funDescriptor, strategy);
+        functionCodegen.generateMethod(OtherOrigin(element, funDescriptor), funDescriptor, null, strategy);
 
         //TODO: rewrite cause ugly hack
         if (samType != null) {

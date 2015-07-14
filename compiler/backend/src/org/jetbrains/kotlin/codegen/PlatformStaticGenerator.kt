@@ -45,6 +45,7 @@ class PlatformStaticGenerator(
         codegen.functionCodegen.generateMethod(
                 Synthetic(originElement, staticFunctionDescriptor),
                 staticFunctionDescriptor,
+                null,
                 object : FunctionGenerationStrategy() {
                     override fun generateBody(
                             mv: MethodVisitor,
