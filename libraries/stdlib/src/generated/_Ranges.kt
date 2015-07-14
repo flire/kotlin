@@ -45,37 +45,37 @@ public fun FloatRange.contains(item: Byte): Boolean {
     return start <= item && item <= end
 }
 
-deprecated("The 'contains' operation for range of Char and Byte item is not supported and should not be used.")
+deprecated("The 'contains' operation for a range of Char and Byte item is not supported and should not be used.")
 public fun CharRange.contains(item: Byte): Nothing {
     throw UnsupportedOperationException()
 }
 
-deprecated("The 'contains' operation for range of Int and Char item is not supported and should not be used.")
+deprecated("The 'contains' operation for a range of Int and Char item is not supported and should not be used.")
 public fun IntRange.contains(item: Char): Nothing {
     throw UnsupportedOperationException()
 }
 
-deprecated("The 'contains' operation for range of Long and Char item is not supported and should not be used.")
+deprecated("The 'contains' operation for a range of Long and Char item is not supported and should not be used.")
 public fun LongRange.contains(item: Char): Nothing {
     throw UnsupportedOperationException()
 }
 
-deprecated("The 'contains' operation for range of Byte and Char item is not supported and should not be used.")
+deprecated("The 'contains' operation for a range of Byte and Char item is not supported and should not be used.")
 public fun ByteRange.contains(item: Char): Nothing {
     throw UnsupportedOperationException()
 }
 
-deprecated("The 'contains' operation for range of Short and Char item is not supported and should not be used.")
+deprecated("The 'contains' operation for a range of Short and Char item is not supported and should not be used.")
 public fun ShortRange.contains(item: Char): Nothing {
     throw UnsupportedOperationException()
 }
 
-deprecated("The 'contains' operation for range of Double and Char item is not supported and should not be used.")
+deprecated("The 'contains' operation for a range of Double and Char item is not supported and should not be used.")
 public fun DoubleRange.contains(item: Char): Nothing {
     throw UnsupportedOperationException()
 }
 
-deprecated("The 'contains' operation for range of Float and Char item is not supported and should not be used.")
+deprecated("The 'contains' operation for a range of Float and Char item is not supported and should not be used.")
 public fun FloatRange.contains(item: Char): Nothing {
     throw UnsupportedOperationException()
 }
@@ -115,7 +115,7 @@ public fun FloatRange.contains(item: Double): Boolean {
     return start <= item && item <= end
 }
 
-deprecated("The 'contains' operation for range of Char and Double item is not supported and should not be used.")
+deprecated("The 'contains' operation for a range of Char and Double item is not supported and should not be used.")
 public fun CharRange.contains(item: Double): Nothing {
     throw UnsupportedOperationException()
 }
@@ -155,7 +155,7 @@ public fun DoubleRange.contains(item: Float): Boolean {
     return start <= item && item <= end
 }
 
-deprecated("The 'contains' operation for range of Char and Float item is not supported and should not be used.")
+deprecated("The 'contains' operation for a range of Char and Float item is not supported and should not be used.")
 public fun CharRange.contains(item: Float): Nothing {
     throw UnsupportedOperationException()
 }
@@ -195,7 +195,7 @@ public fun FloatRange.contains(item: Int): Boolean {
     return start <= item && item <= end
 }
 
-deprecated("The 'contains' operation for range of Char and Int item is not supported and should not be used.")
+deprecated("The 'contains' operation for a range of Char and Int item is not supported and should not be used.")
 public fun CharRange.contains(item: Int): Nothing {
     throw UnsupportedOperationException()
 }
@@ -235,7 +235,7 @@ public fun FloatRange.contains(item: Long): Boolean {
     return start <= item && item <= end
 }
 
-deprecated("The 'contains' operation for range of Char and Long item is not supported and should not be used.")
+deprecated("The 'contains' operation for a range of Char and Long item is not supported and should not be used.")
 public fun CharRange.contains(item: Long): Nothing {
     throw UnsupportedOperationException()
 }
@@ -275,7 +275,7 @@ public fun FloatRange.contains(item: Short): Boolean {
     return start <= item && item <= end
 }
 
-deprecated("The 'contains' operation for range of Char and Short item is not supported and should not be used.")
+deprecated("The 'contains' operation for a range of Char and Short item is not supported and should not be used.")
 public fun CharRange.contains(item: Short): Nothing {
     throw UnsupportedOperationException()
 }
