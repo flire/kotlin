@@ -30,6 +30,15 @@ public interface Annotations : Iterable<AnnotationDescriptor> {
 
     public fun getUseSiteTargetedAnnotations(): List<AnnotationWithTarget>
 
+    public fun getUseSiteTargetedAnnotations(target: AnnotationUseSiteTarget): List<AnnotationDescriptor> {
+        return getUseSiteTargetedAnnotations().fold(arrayListOf<AnnotationDescriptor>()) { list, targeted ->
+            if (target == targeted.target) {
+                list.add(targeted.annotation)
+            }
+            list
+        }
+    }
+
     public fun getAllAnnotations(): List<AnnotationWithTarget>
 
     companion object {
