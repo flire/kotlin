@@ -16,19 +16,21 @@
 
 package org.jetbrains.kotlin.load.kotlin
 
+import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor
 import org.jetbrains.kotlin.descriptors.annotations.AnnotationDescriptor
 import org.jetbrains.kotlin.descriptors.annotations.AnnotationDescriptorImpl
+import org.jetbrains.kotlin.load.java.JvmAnnotationNames
 import org.jetbrains.kotlin.load.java.components.DescriptorResolverUtils
 import org.jetbrains.kotlin.load.kotlin.KotlinJvmBinaryClass.AnnotationArrayArgumentVisitor
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name
-import org.jetbrains.kotlin.resolve.constants.AnnotationValue
-import org.jetbrains.kotlin.resolve.constants.ConstantValue
-import org.jetbrains.kotlin.resolve.constants.ConstantValueFactory
+import org.jetbrains.kotlin.resolve.DescriptorUtils
+import org.jetbrains.kotlin.resolve.constants.*
+import org.jetbrains.kotlin.resolve.jvm.JvmClassName
 import org.jetbrains.kotlin.serialization.ProtoBuf
 import org.jetbrains.kotlin.serialization.deserialization.AnnotationDeserializer
 import org.jetbrains.kotlin.serialization.deserialization.ErrorReporter
@@ -36,6 +38,8 @@ import org.jetbrains.kotlin.serialization.deserialization.NameResolver
 import org.jetbrains.kotlin.serialization.deserialization.findClassAcrossModuleDependencies
 import org.jetbrains.kotlin.storage.StorageManager
 import org.jetbrains.kotlin.types.ErrorUtils
+import org.jetbrains.kotlin.types.TypeUtils
+import java.lang.annotation.ElementType
 import java.util.ArrayList
 import java.util.HashMap
 
@@ -69,6 +73,59 @@ public class BinaryClassAnnotationAndConstantLoaderImpl(
         }
 
         return factory.createConstantValue(normalizedValue)
+    }
+
+    override fun convertAnnotation(
+            annotation: AnnotationDescriptor,
+            result: MutableList<AnnotationDescriptor>
+    ) = generateTargetAnnotationIfNeeded(annotation, result)
+
+    private val targetNames = mapOf(Pair("PACKAGE", "PACKAGE"),
+                                    Pair("TYPE", "CLASSIFIER"),
+                                    Pair("ANNOTATION_TYPE", "ANNOTATION_CLASS"),
+                                    Pair("TYPE_PARAMETER", "TYPE_PARAMETER"),
+                                    Pair("FIELD", "FIELD"),
+                                    Pair("LOCAL_VARIABLE", "LOCAL_VARIABLE"),
+                                    Pair("PARAMETER", "VALUE_PARAMETER"),
+                                    Pair("CONSTRUCTOR", "CONSTRUCTOR"),
+                                    Pair("METHOD", "FUNCTION"),
+                                    Pair("TYPE_USE", "TYPE")
+    )
+
+    private fun generateTargetAnnotationIfNeeded(
+            annotation: AnnotationDescriptor,
+            result: MutableList<AnnotationDescriptor>
+    ): AnnotationDescriptor? {
+        val classDescriptor = annotation.getType().getConstructor().getDeclarationDescriptor() as? ClassDescriptor
+        if (classDescriptor?.let { DescriptorUtils.getFqName(it) } == JvmAnnotationNames.JAVA_TARGET_ANNOTATION.toUnsafe()) {
+            for (existingAnnotation in result) {
+                // If kotlin.annotation.target already exists => return
+                val existingFqName = existingAnnotation.getType().getConstructor().getDeclarationDescriptor()?.let { DescriptorUtils.getFqName(it) }
+                if (existingFqName == KotlinBuiltIns.FQ_NAMES.target.toUnsafe()) return null
+            }
+            // Generate kotlin.annotation.target, map arguments
+            val kotlinTargetClassDescriptor = KotlinBuiltIns.getInstance().getAnnotationClassByName(KotlinBuiltIns.FQ_NAMES.target.shortName());
+            val kotlinAnnotationTargetClassDescriptor = KotlinBuiltIns.getInstance().getAnnotationClassByName(
+                    KotlinBuiltIns.FQ_NAMES.annotationTarget.shortName());
+            val javaArguments = annotation.getAllValueArguments()
+            val javaArgument = javaArguments.entrySet().firstOrNull()?.getValue() as? ArrayValue
+            val kotlinTargets = ArrayList<ConstantValue<*>>()
+            javaArgument?.value?.filterIsInstance<EnumValue>()?.forEach {
+                val targetName = targetNames[it.value.getName().asString()]
+                val enumClassifier = kotlinAnnotationTargetClassDescriptor.getUnsubstitutedInnerClassesScope().getClassifier(Name.identifier(targetName ?: ""))
+                if (enumClassifier is ClassDescriptor) {
+                    kotlinTargets.add(EnumValue(enumClassifier))
+                }
+            }
+            val parameterDescriptor = DescriptorResolverUtils.getAnnotationParameterByName(Name.identifier("allowedTargets"),
+                                                                                           kotlinTargetClassDescriptor)
+            if (parameterDescriptor != null) {
+                val parameterValue = ArrayValue(kotlinTargets, parameterDescriptor.getType())
+                return AnnotationDescriptorImpl(kotlinTargetClassDescriptor.getDefaultType(),
+                                                mapOf(Pair(parameterDescriptor, parameterValue)));
+            }
+        }
+        return null
     }
 
     override fun loadAnnotation(

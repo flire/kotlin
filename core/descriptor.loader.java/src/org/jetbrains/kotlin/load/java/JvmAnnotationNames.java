@@ -44,6 +44,8 @@ public final class JvmAnnotationNames {
     public static final FqName JETBRAINS_MUTABLE_ANNOTATION = new FqName("org.jetbrains.annotations.Mutable");
     public static final FqName JETBRAINS_READONLY_ANNOTATION = new FqName("org.jetbrains.annotations.ReadOnly");
 
+    public static final FqName JAVA_TARGET_ANNOTATION = new FqName("java.lang.annotation.Target");
+
     public static final FqName PURELY_IMPLEMENTS_ANNOTATION = new FqName("kotlin.jvm.PurelyImplements");
 
     // Just for internal use: there is no such real classes in bytecode

@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.load.java.JvmAnnotationNames
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.resolve.jvm.JvmClassName
 import org.jetbrains.kotlin.serialization.Flags
 import org.jetbrains.kotlin.serialization.ProtoBuf
 import org.jetbrains.kotlin.serialization.deserialization.*
@@ -52,6 +53,8 @@ public abstract class AbstractBinaryClassAnnotationAndConstantLoader<A : Any, C 
 
     protected abstract fun loadTypeAnnotation(proto: ProtoBuf.Annotation, nameResolver: NameResolver): A
 
+    protected open fun convertAnnotation(annotation: A, result: MutableList<A>): A? = null
+
     private fun loadAnnotationIfNotSpecial(
             annotationClassId: ClassId,
             result: MutableList<A>
@@ -81,6 +84,12 @@ public abstract class AbstractBinaryClassAnnotationAndConstantLoader<A : Any, C 
             override fun visitEnd() {
             }
         })
+
+        val extra = ArrayList<A>()
+        for (annotation in result) {
+            convertAnnotation(annotation, result)?.let { extra.add(it) }
+        }
+        result.addAll(extra)
 
         return result
     }
