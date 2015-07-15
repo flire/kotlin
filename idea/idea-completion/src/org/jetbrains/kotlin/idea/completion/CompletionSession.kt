@@ -231,7 +231,8 @@ abstract class CompletionSession(protected val configuration: CompletionSessionC
     }
 
     protected fun getRuntimeReceiverTypeReferenceVariants(): Collection<DeclarationDescriptor> {
-        val descriptors = referenceVariantsHelper.getReferenceVariants(reference!!.expression, descriptorKindFilter!!, true, prefixMatcher.asNameFilter())
+        val restrictedKindFilter = descriptorKindFilter!!.restrictedToKinds(DescriptorKindFilter.FUNCTIONS_MASK or DescriptorKindFilter.VARIABLES_MASK) // optimization
+        val descriptors = referenceVariantsHelper.getReferenceVariants(reference!!.expression, restrictedKindFilter, true, prefixMatcher.asNameFilter())
         return descriptors.filter { descriptor ->
             referenceVariants.none { comparePossiblyOverridingDescriptors(project, it, descriptor) }
         }
