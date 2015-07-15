@@ -89,10 +89,6 @@ public abstract class AnnotationCodegen {
             return;
         }
 
-        if (!(annotated instanceof DeclarationDescriptor)) {
-            return;
-        }
-
         Set<String> annotationDescriptorsAlreadyPresent = new HashSet<String>();
 
         Annotations annotations = annotated.getAnnotations();

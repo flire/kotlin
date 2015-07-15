@@ -21,7 +21,10 @@ public enum class AnnotationUseSiteTarget(renderName: String? = null) {
     FILE(),
     PROPERTY(),
     PROPERTY_GETTER("get"),
-    PROPERTY_SETTER("set");
+    PROPERTY_SETTER("set"),
+    RECEIVER(),
+    CONSTRUCTOR_PARAMETER("param"),
+    SETTER_PARAMETER("sparam");
 
     public val renderName: String = renderName ?: name().toLowerCase()
 }

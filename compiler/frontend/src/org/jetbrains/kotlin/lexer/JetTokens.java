@@ -135,6 +135,9 @@ public interface JetTokens {
     JetKeywordToken FILE_KEYWORD      = JetKeywordToken.softKeyword("file");
     JetKeywordToken FIELD_KEYWORD     = JetKeywordToken.softKeyword("field");
     JetKeywordToken PROPERTY_KEYWORD     = JetKeywordToken.softKeyword("property");
+    JetKeywordToken RECEIVER_KEYWORD     = JetKeywordToken.softKeyword("receiver");
+    JetKeywordToken PARAM_KEYWORD     = JetKeywordToken.softKeyword("param");
+    JetKeywordToken SPARAM_KEYWORD     = JetKeywordToken.softKeyword("sparam");
     JetKeywordToken IMPORT_KEYWORD    = JetKeywordToken.softKeyword("import");
     JetKeywordToken WHERE_KEYWORD     = JetKeywordToken.softKeyword("where");
     JetKeywordToken BY_KEYWORD        = JetKeywordToken.softKeyword("by");
@@ -173,7 +176,8 @@ public interface JetTokens {
                                         NOT_IN, NOT_IS, CAPITALIZED_THIS_KEYWORD, AS_SAFE
     );
 
-    TokenSet SOFT_KEYWORDS = TokenSet.create(FILE_KEYWORD, FIELD_KEYWORD, PROPERTY_KEYWORD, IMPORT_KEYWORD, WHERE_KEYWORD, BY_KEYWORD, GET_KEYWORD,
+    TokenSet SOFT_KEYWORDS = TokenSet.create(FILE_KEYWORD, FIELD_KEYWORD, PROPERTY_KEYWORD, RECEIVER_KEYWORD, PARAM_KEYWORD, SPARAM_KEYWORD,
+                                             IMPORT_KEYWORD, WHERE_KEYWORD, BY_KEYWORD, GET_KEYWORD,
                                              SET_KEYWORD, ABSTRACT_KEYWORD, ENUM_KEYWORD, OPEN_KEYWORD, INNER_KEYWORD, ANNOTATION_KEYWORD,
                                              OVERRIDE_KEYWORD, PRIVATE_KEYWORD, PUBLIC_KEYWORD, INTERNAL_KEYWORD, PROTECTED_KEYWORD,
                                              CATCH_KEYWORD, FINALLY_KEYWORD, OUT_KEYWORD, FINAL_KEYWORD, VARARG_KEYWORD, REIFIED_KEYWORD,

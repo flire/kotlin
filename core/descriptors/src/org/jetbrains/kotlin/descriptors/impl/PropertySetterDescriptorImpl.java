@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import static org.jetbrains.kotlin.descriptors.annotations.AnnotationUseSiteTarget.*;
 import static org.jetbrains.kotlin.resolve.descriptorUtil.DescriptorUtilPackage.getBuiltIns;
 
 public class PropertySetterDescriptorImpl extends PropertyAccessorDescriptorImpl implements PropertySetterDescriptor {
@@ -49,7 +50,7 @@ public class PropertySetterDescriptorImpl extends PropertyAccessorDescriptorImpl
             @NotNull SourceElement source
     ) {
         super(modality, visibility, correspondingProperty,
-              new UseSiteTargetedAnnotations(annotations, correspondingProperty, AnnotationUseSiteTarget.PROPERTY_SETTER),
+              new UseSiteTargetedAnnotations(annotations, correspondingProperty, PROPERTY_SETTER, SETTER_PARAMETER),
               Name.special("<set-" + correspondingProperty.getName() + ">"), hasBody, isDefault, kind, source);
         this.original = original != null ? original : this;
     }

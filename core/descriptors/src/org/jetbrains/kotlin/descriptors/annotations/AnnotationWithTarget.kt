@@ -16,6 +16,7 @@
 
 package org.jetbrains.kotlin.descriptors.annotations
 
+import org.jetbrains.kotlin.descriptors.annotations
 import org.jetbrains.kotlin.name.FqName
 
 public data class AnnotationWithTarget(val annotation: AnnotationDescriptor, val target: AnnotationUseSiteTarget?)
@@ -23,8 +24,9 @@ public data class AnnotationWithTarget(val annotation: AnnotationDescriptor, val
 public class UseSiteTargetedAnnotations(
         private val original: Annotations,
         private val annotated: Annotated,
-        private val acceptedTarget: AnnotationUseSiteTarget
+        vararg acceptedTargets: AnnotationUseSiteTarget
 ) : Annotations {
+    private val acceptedTargets = acceptedTargets.toSet()
 
     override fun isEmpty() = original.isEmpty()
 
@@ -33,7 +35,7 @@ public class UseSiteTargetedAnnotations(
     override fun findExternalAnnotation(fqName: FqName) = original.findExternalAnnotation(fqName)
 
     private fun getAdditionalTargetedAnnotations() = annotated.getAnnotations()
-            .getUseSiteTargetedAnnotations().filter { it.target == acceptedTarget }
+            .getUseSiteTargetedAnnotations().filter { it.target in acceptedTargets }
 
     override fun getUseSiteTargetedAnnotations(): List<AnnotationWithTarget> {
         return original.getUseSiteTargetedAnnotations() + getAdditionalTargetedAnnotations()
@@ -44,4 +46,16 @@ public class UseSiteTargetedAnnotations(
     }
 
     override fun iterator() = original.iterator()
+}
+
+public class AnnotatedWithAdditionalAnnotations(
+        delegate: Annotated?,
+        additional: Annotated,
+        acceptedTarget: annotations.AnnotationUseSiteTarget
+) : Annotated {
+
+    private val annotations: Annotations = UseSiteTargetedAnnotations(
+            delegate?.getAnnotations() ?: Annotations.EMPTY, additional, acceptedTarget)
+
+    override fun getAnnotations() = annotations
 }

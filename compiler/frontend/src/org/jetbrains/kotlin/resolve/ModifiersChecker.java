@@ -343,16 +343,25 @@ public class ModifiersChecker {
                     }
                     break;
                 case PROPERTY_SETTER: {
-                    if (!(descriptor instanceof PropertyDescriptor) && !(descriptor instanceof PropertySetterDescriptor)) {
-                        reportAnnotationTargetNotApplicable(annotation, INAPPLICABLE_SET_TARGET);
+                    reportIfNotMutableProperty(descriptor, annotation, INAPPLICABLE_SET_TARGET);
+                    break;
+                }
+                case RECEIVER: {
+                    if (!(descriptor instanceof FunctionDescriptor)  && !(descriptor instanceof PropertyDescriptor)) {
+                        reportAnnotationTargetNotApplicable(annotation, INAPPLICABLE_RECEIVER_TARGET);
                         break;
                     }
 
-                    if (descriptor instanceof PropertyDescriptor) {
-                        if (!((PropertyDescriptor) descriptor).isVar()) {
-                            reportAnnotationTargetNotApplicable(annotation, INAPPLICABLE_SET_TARGET_PROPERTY_IMMUTABLE);
-                        }
+                    if (((CallableMemberDescriptor) descriptor).getExtensionReceiverParameter() == null) {
+                        reportAnnotationTargetNotApplicable(annotation, INAPPLICABLE_RECEIVER_TARGET);
                     }
+                }
+                case CONSTRUCTOR_PARAMETER: {
+                    if (!(descriptor instanceof ClassDescriptor))
+                    break;
+                }
+                case SETTER_PARAMETER: {
+                    reportIfNotMutableProperty(descriptor, annotation, INAPPLICABLE_SPARAM_TARGET);
                     break;
                 }
                 case FILE:
@@ -367,6 +376,22 @@ public class ModifiersChecker {
         PropertyDescriptor propertyDescriptor = (PropertyDescriptor) descriptor;
         if (Boolean.FALSE.equals(trace.getBindingContext().get(BindingContext.BACKING_FIELD_REQUIRED, propertyDescriptor))) {
             reportAnnotationTargetNotApplicable(annotation, INAPPLICABLE_FIELD_TARGET_NO_BACKING_FIELD);
+        }
+    }
+
+    private void reportIfNotMutableProperty(
+            DeclarationDescriptor descriptor,
+            AnnotationDescriptor annotation,
+            DiagnosticFactory0<PsiElement> diagnosticFactory
+    ) {
+        if (!(descriptor instanceof PropertyDescriptor) && !(descriptor instanceof PropertySetterDescriptor)) {
+            reportAnnotationTargetNotApplicable(annotation, diagnosticFactory);
+        }
+
+        if (descriptor instanceof PropertyDescriptor) {
+            if (!((PropertyDescriptor) descriptor).isVar()) {
+                reportAnnotationTargetNotApplicable(annotation, INAPPLICABLE_TARGET_PROPERTY_IMMUTABLE);
+            }
         }
     }
 
