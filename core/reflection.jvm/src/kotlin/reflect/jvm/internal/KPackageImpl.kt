@@ -17,9 +17,11 @@
 package kotlin.reflect.jvm.internal
 
 import org.jetbrains.kotlin.descriptors.ConstructorDescriptor
+import org.jetbrains.kotlin.descriptors.PropertyDescriptor
 import org.jetbrains.kotlin.load.java.structure.reflect.classId
 import org.jetbrains.kotlin.resolve.scopes.JetScope
 import kotlin.jvm.internal.KotlinPackage
+import kotlin.reflect.KElement
 import kotlin.reflect.KPackage
 
 class KPackageImpl(override val jClass: Class<*>) : KCallableContainerImpl(), KPackage {
@@ -34,6 +36,22 @@ class KPackageImpl(override val jClass: Class<*>) : KCallableContainerImpl(), KP
 
     override val constructorDescriptors: Sequence<ConstructorDescriptor>
         get() = emptySequence()
+
+    override val members: Collection<KElement>
+        get() = getMembers(declaredOnly = false, nonExtensions = true, extensions = true).toList()
+
+    override fun createProperty(descriptor: PropertyDescriptor): KPropertyImpl<*> {
+        return when {
+            descriptor.getExtensionReceiverParameter() == null -> when {
+                descriptor.isVar() -> KMutableProperty0Impl<Any?>(this, descriptor)
+                else -> KProperty0Impl<Any?>(this, descriptor)
+            }
+            else -> when {
+                descriptor.isVar() -> KMutableProperty1Impl<Any?, Any?>(this, descriptor)
+                else -> KProperty1Impl<Any?, Any?>(this, descriptor)
+            }
+        }
+    }
 
     override fun equals(other: Any?): Boolean =
             other is KPackageImpl && jClass == other.jClass

@@ -17,6 +17,7 @@
 package kotlin.reflect.jvm.internal
 
 import org.jetbrains.kotlin.descriptors.ConstructorDescriptor
+import org.jetbrains.kotlin.descriptors.PropertyDescriptor
 import org.jetbrains.kotlin.resolve.scopes.JetScope
 import kotlin.jvm.internal.FunctionReference
 import kotlin.reflect.KotlinReflectionInternalError
@@ -68,6 +69,8 @@ object EmptyContainerForLocal : KCallableContainerImpl() {
 
     override val constructorDescriptors: Sequence<ConstructorDescriptor>
         get() = fail()
+
+    override fun createProperty(descriptor: PropertyDescriptor): KPropertyImpl<*> = fail()
 
     private fun fail() = throw KotlinReflectionInternalError("Introspecting local functions is not yet supported in Kotlin reflection")
 }

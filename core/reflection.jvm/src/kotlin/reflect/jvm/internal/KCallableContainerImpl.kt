@@ -16,9 +16,8 @@
 
 package kotlin.reflect.jvm.internal
 
-import org.jetbrains.kotlin.descriptors.ConstructorDescriptor
-import org.jetbrains.kotlin.descriptors.FunctionDescriptor
-import org.jetbrains.kotlin.descriptors.PropertyDescriptor
+import org.jetbrains.kotlin.descriptors.*
+import org.jetbrains.kotlin.descriptors.impl.DeclarationDescriptorVisitorEmptyBodies
 import org.jetbrains.kotlin.load.java.structure.reflect.classId
 import org.jetbrains.kotlin.load.java.structure.reflect.classLoader
 import org.jetbrains.kotlin.load.java.structure.reflect.createArrayType
@@ -32,6 +31,7 @@ import org.jetbrains.kotlin.serialization.jvm.JvmProtoBuf.JvmType.PrimitiveType.
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import kotlin.reflect.KDeclarationContainer
+import kotlin.reflect.KElement
 import kotlin.reflect.KotlinReflectionInternalError
 
 abstract class KCallableContainerImpl : KDeclarationContainer {
@@ -45,6 +45,44 @@ abstract class KCallableContainerImpl : KDeclarationContainer {
     abstract val scope: JetScope
 
     abstract val constructorDescriptors: Sequence<ConstructorDescriptor>
+
+    abstract fun createProperty(descriptor: PropertyDescriptor): KPropertyImpl<*>
+
+    fun getMembers(declaredOnly: Boolean, nonExtensions: Boolean, extensions: Boolean): Sequence<KElement> {
+        val visitor = object : DeclarationDescriptorVisitorEmptyBodies<KElement?, Nothing>() {
+            private fun skipCallable(descriptor: CallableMemberDescriptor): Boolean {
+                if (declaredOnly && !descriptor.getKind().isReal()) return true
+
+                val isExtension = descriptor.getExtensionReceiverParameter() != null
+                if (isExtension && !extensions) return true
+                if (!isExtension && !nonExtensions) return true
+
+                return false
+            }
+
+            override fun visitPropertyDescriptor(descriptor: PropertyDescriptor, data: Nothing?): KElement? {
+                return if (skipCallable(descriptor)) null else createProperty(descriptor)
+            }
+
+            override fun visitFunctionDescriptor(descriptor: FunctionDescriptor, data: Nothing?): KElement? {
+                return if (skipCallable(descriptor)) null else KFunctionImpl(this@KCallableContainerImpl, descriptor)
+
+            }
+
+            override fun visitConstructorDescriptor(descriptor: ConstructorDescriptor, data: Nothing?): KElement? {
+                throw IllegalStateException("No constructors should appear in this scope: $descriptor")
+            }
+        }
+
+        return scope.getAllDescriptors().asSequence()
+                .filter { descriptor ->
+                    descriptor !is MemberDescriptor || descriptor.getVisibility() != Visibilities.INVISIBLE_FAKE
+                }
+                .map { descriptor ->
+                    descriptor.accept(visitor, null)
+                }
+                .filterNotNull()
+    }
 
     fun findPropertyDescriptor(name: String, signature: String): PropertyDescriptor {
         val properties = scope

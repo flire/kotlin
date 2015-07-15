@@ -19,4 +19,10 @@ package kotlin.reflect
 /**
  * Represents a package and provides introspection capabilities.
  */
-public interface KPackage : KDeclarationContainer
+public interface KPackage : KDeclarationContainer {
+    /**
+     * All functions and properties accessible in this package.
+     * Note that this doesn't include classes declared in the package.
+     */
+    public val members: Collection<KElement>
+}
