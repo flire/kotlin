@@ -1,0 +1,5 @@
+package test
+
+public final class base : kotlin.Annotation {
+    public constructor base()
+}

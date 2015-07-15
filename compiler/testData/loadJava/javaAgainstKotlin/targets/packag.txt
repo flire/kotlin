@@ -1,0 +1,9 @@
+package test
+
+test.packag() public final class My {
+    public constructor My()
+}
+
+kotlin.annotation.target(allowedTargets = {AnnotationTarget.PACKAGE}) public final class packag : kotlin.Annotation {
+    public constructor packag()
+}

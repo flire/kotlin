@@ -1,0 +1,10 @@
+package test
+
+test.base() public final class My {
+    public constructor My()
+    test.base() internal final fun foo(/*0*/ test.base() i: @[test.base()] kotlin.Int): kotlin.Int
+}
+
+public final class base : kotlin.Annotation {
+    public constructor base()
+}

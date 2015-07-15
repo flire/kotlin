@@ -452,6 +452,75 @@ public class LoadJavaTestGenerated extends AbstractLoadJavaTest {
                 String fileName = JetTestUtils.navigationMetadata("compiler/testData/loadJava/compiledJava/annotations/StringInParam.java");
                 doTestCompiledJava(fileName);
             }
+
+            @TestMetadata("compiler/testData/loadJava/compiledJava/annotations/targets")
+            @TestDataPath("$PROJECT_ROOT")
+            @RunWith(JUnit3RunnerWithInners.class)
+            public static class Targets extends AbstractLoadJavaTest {
+                public void testAllFilesPresentInTargets() throws Exception {
+                    JetTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/annotations/targets"), Pattern.compile("^(.+)\\.java$"), true);
+                }
+
+                @TestMetadata("annotation.java")
+                public void testAnnotation() throws Exception {
+                    String fileName = JetTestUtils.navigationMetadata("compiler/testData/loadJava/compiledJava/annotations/targets/annotation.java");
+                    doTestCompiledJava(fileName);
+                }
+
+                @TestMetadata("base.java")
+                public void testBase() throws Exception {
+                    String fileName = JetTestUtils.navigationMetadata("compiler/testData/loadJava/compiledJava/annotations/targets/base.java");
+                    doTestCompiledJava(fileName);
+                }
+
+                @TestMetadata("constructor.java")
+                public void testConstructor() throws Exception {
+                    String fileName = JetTestUtils.navigationMetadata("compiler/testData/loadJava/compiledJava/annotations/targets/constructor.java");
+                    doTestCompiledJava(fileName);
+                }
+
+                @TestMetadata("field.java")
+                public void testField() throws Exception {
+                    String fileName = JetTestUtils.navigationMetadata("compiler/testData/loadJava/compiledJava/annotations/targets/field.java");
+                    doTestCompiledJava(fileName);
+                }
+
+                @TestMetadata("local.java")
+                public void testLocal() throws Exception {
+                    String fileName = JetTestUtils.navigationMetadata("compiler/testData/loadJava/compiledJava/annotations/targets/local.java");
+                    doTestCompiledJava(fileName);
+                }
+
+                @TestMetadata("method.java")
+                public void testMethod() throws Exception {
+                    String fileName = JetTestUtils.navigationMetadata("compiler/testData/loadJava/compiledJava/annotations/targets/method.java");
+                    doTestCompiledJava(fileName);
+                }
+
+                @TestMetadata("multiple.java")
+                public void testMultiple() throws Exception {
+                    String fileName = JetTestUtils.navigationMetadata("compiler/testData/loadJava/compiledJava/annotations/targets/multiple.java");
+                    doTestCompiledJava(fileName);
+                }
+
+                @TestMetadata("packag.java")
+                public void testPackag() throws Exception {
+                    String fileName = JetTestUtils.navigationMetadata("compiler/testData/loadJava/compiledJava/annotations/targets/packag.java");
+                    doTestCompiledJava(fileName);
+                }
+
+                @TestMetadata("parameter.java")
+                public void testParameter() throws Exception {
+                    String fileName = JetTestUtils.navigationMetadata("compiler/testData/loadJava/compiledJava/annotations/targets/parameter.java");
+                    doTestCompiledJava(fileName);
+                }
+
+                @TestMetadata("type.java")
+                public void testType() throws Exception {
+                    String fileName = JetTestUtils.navigationMetadata("compiler/testData/loadJava/compiledJava/annotations/targets/type.java");
+                    doTestCompiledJava(fileName);
+                }
+            }
         }
 
         @TestMetadata("compiler/testData/loadJava/compiledJava/constructor")
@@ -5081,6 +5150,40 @@ public class LoadJavaTestGenerated extends AbstractLoadJavaTest {
             @TestMetadata("SubclassingKotlinInJava.txt")
             public void testSubclassingKotlinInJava() throws Exception {
                 String fileName = JetTestUtils.navigationMetadata("compiler/testData/loadJava/javaAgainstKotlin/signaturePropagation/SubclassingKotlinInJava.txt");
+                doTestJavaAgainstKotlin(fileName);
+            }
+
+        }
+
+        @TestMetadata("compiler/testData/loadJava/javaAgainstKotlin/targets")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class Targets extends AbstractLoadJavaTest {
+            public void testAllFilesPresentInTargets() throws Exception {
+                JetTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/javaAgainstKotlin/targets"), Pattern.compile("^(.+)\\.txt$"), true);
+            }
+
+            @TestMetadata("base.txt")
+            public void testBase() throws Exception {
+                String fileName = JetTestUtils.navigationMetadata("compiler/testData/loadJava/javaAgainstKotlin/targets/base.txt");
+                doTestJavaAgainstKotlin(fileName);
+            }
+
+            @TestMetadata("method.txt")
+            public void testMethod() throws Exception {
+                String fileName = JetTestUtils.navigationMetadata("compiler/testData/loadJava/javaAgainstKotlin/targets/method.txt");
+                doTestJavaAgainstKotlin(fileName);
+            }
+
+            @TestMetadata("packag.txt")
+            public void testPackag() throws Exception {
+                String fileName = JetTestUtils.navigationMetadata("compiler/testData/loadJava/javaAgainstKotlin/targets/packag.txt");
+                doTestJavaAgainstKotlin(fileName);
+            }
+
+            @TestMetadata("type.txt")
+            public void testType() throws Exception {
+                String fileName = JetTestUtils.navigationMetadata("compiler/testData/loadJava/javaAgainstKotlin/targets/type.txt");
                 doTestJavaAgainstKotlin(fileName);
             }
 

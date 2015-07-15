@@ -1,0 +1,10 @@
+package test
+
+test.type() internal final class My {
+    public constructor My()
+    internal final fun foo(): kotlin.Unit
+}
+
+public final class type : kotlin.Annotation {
+    public constructor type()
+}

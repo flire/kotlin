@@ -33,6 +33,7 @@ import org.jetbrains.kotlin.types.JetType;
 import org.jetbrains.kotlin.types.TypeUtils;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Target;
 import java.util.*;
 
 public class JavaToKotlinClassMap implements PlatformToKotlinClassMap {
@@ -86,6 +87,7 @@ public class JavaToKotlinClassMap implements PlatformToKotlinClassMap {
         }
 
         addJavaToKotlin(classId(Deprecated.class), builtIns.getDeprecatedAnnotation());
+        addJavaToKotlin(classId(Target.class), builtIns.getTargetAnnotation());
 
         addKotlinToJava(builtIns.getNothing(), classId(Void.class));
     }

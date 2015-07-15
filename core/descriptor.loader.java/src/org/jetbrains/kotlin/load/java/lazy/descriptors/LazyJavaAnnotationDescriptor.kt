@@ -16,6 +16,7 @@
 
 package org.jetbrains.kotlin.load.java.lazy.descriptors
 
+import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor
 import org.jetbrains.kotlin.descriptors.annotations.AnnotationDescriptor
@@ -30,17 +31,24 @@ import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.platform.JavaToKotlinClassMap
 import org.jetbrains.kotlin.renderer.DescriptorRenderer
-import org.jetbrains.kotlin.resolve.constants.ConstantValue
-import org.jetbrains.kotlin.resolve.constants.ConstantValueFactory
+import org.jetbrains.kotlin.resolve.constants.*
 import org.jetbrains.kotlin.resolve.descriptorUtil.resolveTopLevelClass
 import org.jetbrains.kotlin.resolve.jvm.PLATFORM_TYPES
 import org.jetbrains.kotlin.types.*
 import org.jetbrains.kotlin.utils.keysToMapExceptNulls
 import org.jetbrains.kotlin.utils.valuesToMap
+import java.lang.annotation.Target
+import java.util.*
 
 private object DEPRECATED_IN_JAVA : JavaLiteralAnnotationArgument {
     override val name: Name? = null
     override val value: Any? = "Deprecated in Java"
+}
+
+private class TargetInJava(private val javaArguments: List<JavaAnnotationArgument>) : JavaArrayAnnotationArgument {
+    override val name: Name? = null
+
+    override fun getElements(): List<JavaAnnotationArgument> = javaArguments
 }
 
 fun LazyJavaResolverContext.resolveAnnotation(annotation: JavaAnnotation): LazyJavaAnnotationDescriptor? {
@@ -83,7 +91,9 @@ class LazyJavaAnnotationDescriptor(
 
         return constructors.first().getValueParameters().keysToMapExceptNulls { valueParameter ->
             var javaAnnotationArgument = nameToArg[valueParameter.getName()]
-            if (javaAnnotationArgument == null && valueParameter.getName() == DEFAULT_ANNOTATION_MEMBER_NAME) {
+            if (javaAnnotationArgument == null
+                && (valueParameter.getName() == DEFAULT_ANNOTATION_MEMBER_NAME
+                    || nameToArg[null] is TargetInJava)) {
                 javaAnnotationArgument = nameToArg[null]
             }
 
@@ -96,6 +106,15 @@ class LazyJavaAnnotationDescriptor(
         if (arguments.isEmpty() && fqName()?.asString() == "java.lang.Deprecated") {
             arguments = listOf(DEPRECATED_IN_JAVA)
         }
+        if (arguments.size() == 1 && fqName()?.asString() == "java.lang.annotation.Target") {
+            val argument = arguments.first()
+            if (argument is JavaArrayAnnotationArgument) {
+                arguments = listOf(TargetInJava(argument.getElements()))
+            }
+            else if (argument is JavaEnumValueAnnotationArgument) {
+                arguments = listOf(TargetInJava(listOf(argument)))
+            }
+        }
         return arguments.valuesToMap { it.name }
     }
 
@@ -105,11 +124,44 @@ class LazyJavaAnnotationDescriptor(
         return when (argument) {
             is JavaLiteralAnnotationArgument -> factory.createConstantValue(argument.value)
             is JavaEnumValueAnnotationArgument -> resolveFromEnumValue(argument.resolve())
+            is TargetInJava -> resolveFromTargetInJava(argument.getElements())
             is JavaArrayAnnotationArgument -> resolveFromArray(argument.name ?: DEFAULT_ANNOTATION_MEMBER_NAME, argument.getElements())
             is JavaAnnotationAsAnnotationArgument -> resolveFromAnnotation(argument.getAnnotation())
             is JavaClassObjectAnnotationArgument -> resolveFromJavaClassObjectType(argument.getReferencedType())
             else -> null
         }
+    }
+
+    companion object {
+        private val targetNameLists = mapOf(Pair("PACKAGE", listOf("PACKAGE")),
+                                            Pair("TYPE", listOf("CLASSIFIER")),
+                                            Pair("ANNOTATION_TYPE", listOf("ANNOTATION_CLASS")),
+                                            Pair("TYPE_PARAMETER", listOf("TYPE_PARAMETER")),
+                                            Pair("FIELD", listOf("FIELD")),
+                                            Pair("LOCAL_VARIABLE", listOf("LOCAL_VARIABLE")),
+                                            Pair("PARAMETER", listOf("VALUE_PARAMETER")),
+                                            Pair("CONSTRUCTOR", listOf("CONSTRUCTOR")),
+                                            Pair("METHOD", listOf("FUNCTION", "PROPERTY_GETTER", "PROPERTY_SETTER")),
+                                            Pair("TYPE_USE", listOf("TYPE"))
+        )
+    }
+
+    private fun resolveFromTargetInJava(elements: List<JavaAnnotationArgument>): ConstantValue<*>? {
+        // TODO: remap Java to Kotlin
+        // Generate kotlin.annotation.target, map arguments
+        val kotlinAnnotationTargetClassDescriptor = KotlinBuiltIns.getInstance().getAnnotationTargetEnum()
+        val kotlinTargets = ArrayList<ConstantValue<*>>()
+        elements.filterIsInstance<JavaEnumValueAnnotationArgument>().forEach {
+            targetNameLists[it.resolve()?.getName()?.asString()]?.forEach {
+                val enumClassifier = kotlinAnnotationTargetClassDescriptor.getUnsubstitutedInnerClassesScope().getClassifier(Name.identifier(it))
+                if (enumClassifier is ClassDescriptor) {
+                    kotlinTargets.add(EnumValue(enumClassifier))
+                }
+            }
+        }
+        val parameterDescriptor = DescriptorResolverUtils.getAnnotationParameterByName(Name.identifier("allowedTargets"),
+                                                                                       KotlinBuiltIns.getInstance().getTargetAnnotation())
+        return ArrayValue(kotlinTargets, parameterDescriptor?.getType() ?: ErrorUtils.createErrorType("Error: AnnotationTarget[]"))
     }
 
     private fun resolveFromAnnotation(javaAnnotation: JavaAnnotation): ConstantValue<*>? {

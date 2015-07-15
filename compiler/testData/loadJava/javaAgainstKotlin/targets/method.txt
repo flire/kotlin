@@ -1,0 +1,10 @@
+package test
+
+internal final class My {
+    public constructor My()
+    test.method() internal final fun foo(): kotlin.Unit
+}
+
+public final class method : kotlin.Annotation {
+    public constructor method()
+}

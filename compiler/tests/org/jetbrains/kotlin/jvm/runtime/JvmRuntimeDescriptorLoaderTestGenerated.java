@@ -3503,6 +3503,75 @@ public class JvmRuntimeDescriptorLoaderTestGenerated extends AbstractJvmRuntimeD
                 String fileName = JetTestUtils.navigationMetadata("compiler/testData/loadJava/compiledJava/annotations/StringInParam.java");
                 doTest(fileName);
             }
+
+            @TestMetadata("compiler/testData/loadJava/compiledJava/annotations/targets")
+            @TestDataPath("$PROJECT_ROOT")
+            @RunWith(JUnit3RunnerWithInners.class)
+            public static class Targets extends AbstractJvmRuntimeDescriptorLoaderTest {
+                public void testAllFilesPresentInTargets() throws Exception {
+                    JetTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/annotations/targets"), Pattern.compile("^(.+)\\.java$"), true);
+                }
+
+                @TestMetadata("annotation.java")
+                public void testAnnotation() throws Exception {
+                    String fileName = JetTestUtils.navigationMetadata("compiler/testData/loadJava/compiledJava/annotations/targets/annotation.java");
+                    doTest(fileName);
+                }
+
+                @TestMetadata("base.java")
+                public void testBase() throws Exception {
+                    String fileName = JetTestUtils.navigationMetadata("compiler/testData/loadJava/compiledJava/annotations/targets/base.java");
+                    doTest(fileName);
+                }
+
+                @TestMetadata("constructor.java")
+                public void testConstructor() throws Exception {
+                    String fileName = JetTestUtils.navigationMetadata("compiler/testData/loadJava/compiledJava/annotations/targets/constructor.java");
+                    doTest(fileName);
+                }
+
+                @TestMetadata("field.java")
+                public void testField() throws Exception {
+                    String fileName = JetTestUtils.navigationMetadata("compiler/testData/loadJava/compiledJava/annotations/targets/field.java");
+                    doTest(fileName);
+                }
+
+                @TestMetadata("local.java")
+                public void testLocal() throws Exception {
+                    String fileName = JetTestUtils.navigationMetadata("compiler/testData/loadJava/compiledJava/annotations/targets/local.java");
+                    doTest(fileName);
+                }
+
+                @TestMetadata("method.java")
+                public void testMethod() throws Exception {
+                    String fileName = JetTestUtils.navigationMetadata("compiler/testData/loadJava/compiledJava/annotations/targets/method.java");
+                    doTest(fileName);
+                }
+
+                @TestMetadata("multiple.java")
+                public void testMultiple() throws Exception {
+                    String fileName = JetTestUtils.navigationMetadata("compiler/testData/loadJava/compiledJava/annotations/targets/multiple.java");
+                    doTest(fileName);
+                }
+
+                @TestMetadata("packag.java")
+                public void testPackag() throws Exception {
+                    String fileName = JetTestUtils.navigationMetadata("compiler/testData/loadJava/compiledJava/annotations/targets/packag.java");
+                    doTest(fileName);
+                }
+
+                @TestMetadata("parameter.java")
+                public void testParameter() throws Exception {
+                    String fileName = JetTestUtils.navigationMetadata("compiler/testData/loadJava/compiledJava/annotations/targets/parameter.java");
+                    doTest(fileName);
+                }
+
+                @TestMetadata("type.java")
+                public void testType() throws Exception {
+                    String fileName = JetTestUtils.navigationMetadata("compiler/testData/loadJava/compiledJava/annotations/targets/type.java");
+                    doTest(fileName);
+                }
+            }
         }
 
         @TestMetadata("compiler/testData/loadJava/compiledJava/constructor")
