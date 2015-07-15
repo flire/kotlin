@@ -16,13 +16,11 @@
 
 package kotlin.reflect.jvm
 
+import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import kotlin.reflect.*
-import kotlin.reflect.jvm.internal.KClassImpl
-import kotlin.reflect.jvm.internal.KMutablePropertyImpl
-import kotlin.reflect.jvm.internal.KPackageImpl
-import kotlin.reflect.jvm.internal.KPropertyImpl
+import kotlin.reflect.jvm.internal.*
 
 // Kotlin reflection -> Java reflection
 
@@ -64,6 +62,21 @@ public val KMutableProperty<*>.javaSetter: Method?
     get() = (this as? KMutablePropertyImpl<*>)?.javaSetter
 
 
+/**
+ * Returns a Java [Method] instance corresponding to the given Kotlin function,
+ * or `null` if this function is a constructor or cannot be represented by a Java [Method].
+ */
+public val KFunction<*>.javaMethod: Method?
+    get() = (this as? KFunctionImpl)?.javaMethod
+
+/**
+ * Returns a Java [Constructor] instance corresponding to the given Kotlin function,
+ * or `null` if this function is not a constructor or cannot be represented by a Java [Constructor].
+ */
+@suppress("UNCHECKED_CAST")
+public val <T> KFunction<T>.javaConstructor: Constructor<T>?
+    get() = (this as? KFunctionImpl)?.javaConstructor as Constructor<T>?
+
 
 
 // Java reflection -> Kotlin reflection
@@ -94,10 +107,21 @@ public val Field.kotlin: KProperty<*>?
     get() {
         if (isSynthetic()) return null
 
-        val clazz = getDeclaringClass().kotlin as KClassImpl
-
         // TODO: optimize (search by name)
-        return clazz.properties.firstOrNull { p: KProperty<*> ->
-            (p as KPropertyImpl<*>).javaField == this
-        }
+        return getDeclaringClass().kotlin.properties.firstOrNull { it.javaField == this }
+    }
+
+
+public val Method.kotlinFunction: KFunction<*>?
+    get() {
+        if (isSynthetic()) return null
+
+        return getDeclaringClass().kotlin.functions.firstOrNull { it.javaMethod == this }
+    }
+
+public val <T> Constructor<T>.kotlinFunction: KFunction<T>?
+    get() {
+        if (isSynthetic()) return null
+
+        return getDeclaringClass().kotlin.constructors.firstOrNull { it.javaConstructor == this }
     }
