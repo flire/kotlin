@@ -139,7 +139,7 @@ public class DefaultErrorMessages {
         MAP.put(INAPPLICABLE_PLATFORM_NAME, "platformName annotation is not applicable to this declaration");
 
         MAP.put(INAPPLICABLE_FIELD_TARGET, "''@field:'' annotations could be applied only to property declarations");
-        MAP.put(INAPPLICABLE_FIELD_TARGET_NO_BACKING_FIELD, "Property does not have a backing field");
+        MAP.put(INAPPLICABLE_FIELD_TARGET_NO_BACKING_FIELD, "Property has neither a backing field nor a delegate");
         MAP.put(INAPPLICABLE_GET_TARGET, "''@get:'' annotations could be applied only to property declarations");
         MAP.put(INAPPLICABLE_SET_TARGET, "''@set:'' annotations could be applied only to property declarations");
         MAP.put(INAPPLICABLE_TARGET_PROPERTY_IMMUTABLE, "Property must be mutable");

@@ -42,6 +42,7 @@ import java.util.*;
 import static org.jetbrains.kotlin.diagnostics.Errors.*;
 import static org.jetbrains.kotlin.lexer.JetTokens.*;
 import static org.jetbrains.kotlin.psi.JetStubbedPsiUtil.getContainingDeclaration;
+import static org.jetbrains.kotlin.resolve.BindingContext.BACKING_FIELD_REQUIRED;
 import static org.jetbrains.kotlin.resolve.DescriptorUtils.isCompanionObject;
 import static org.jetbrains.kotlin.resolve.DescriptorUtils.isEnumEntry;
 
@@ -151,7 +152,7 @@ public class ModifiersChecker {
             checkVarargsModifiers(modifierListOwner, descriptor);
         }
         checkPlatformNameApplicability(descriptor);
-        checkAnnotationUseSiteTargetApplicability(descriptor);
+        checkAnnotationUseSiteTargetApplicability(modifierListOwner, descriptor);
         runDeclarationCheckers(modifierListOwner, descriptor);
     }
 
@@ -165,7 +166,7 @@ public class ModifiersChecker {
         reportIllegalModalityModifiers(modifierListOwner);
         reportIllegalVisibilityModifiers(modifierListOwner);
         checkPlatformNameApplicability(descriptor);
-        checkAnnotationUseSiteTargetApplicability(descriptor);
+        checkAnnotationUseSiteTargetApplicability(modifierListOwner, descriptor);
         runDeclarationCheckers(modifierListOwner, descriptor);
     }
 
@@ -324,7 +325,10 @@ public class ModifiersChecker {
 
     }
 
-    private void checkAnnotationUseSiteTargetApplicability(@NotNull DeclarationDescriptor descriptor) {
+    private void checkAnnotationUseSiteTargetApplicability(
+            @NotNull JetDeclaration modifierListOwner,
+            @NotNull DeclarationDescriptor descriptor
+    ) {
         for (AnnotationWithTarget annotationWithTarget : descriptor.getAnnotations().getUseSiteTargetedAnnotations()) {
             AnnotationDescriptor annotation = annotationWithTarget.getAnnotation();
             AnnotationUseSiteTarget target = annotationWithTarget.getTarget();
@@ -332,7 +336,7 @@ public class ModifiersChecker {
 
             switch (target) {
                 case FIELD:
-                    checkFieldTargetApplicability(descriptor, annotation);
+                    checkFieldTargetApplicability(modifierListOwner, descriptor, annotation);
                     break;
                 case PROPERTY:
                     reportIfNotPropertyDescriptor(descriptor, annotation, INAPPLICABLE_PROPERTY_TARGET);
@@ -370,11 +374,17 @@ public class ModifiersChecker {
         }
     }
 
-    private void checkFieldTargetApplicability(DeclarationDescriptor descriptor, AnnotationDescriptor annotation) {
+    private void checkFieldTargetApplicability(
+            JetDeclaration modifierListOwner,
+            DeclarationDescriptor descriptor,
+            AnnotationDescriptor annotation
+    ) {
         if (reportIfNotPropertyDescriptor(descriptor, annotation, INAPPLICABLE_FIELD_TARGET)) return;
 
         PropertyDescriptor propertyDescriptor = (PropertyDescriptor) descriptor;
-        if (Boolean.FALSE.equals(trace.getBindingContext().get(BindingContext.BACKING_FIELD_REQUIRED, propertyDescriptor))) {
+        boolean hasDelegate = modifierListOwner instanceof JetProperty && ((JetProperty) modifierListOwner).hasDelegate();
+
+        if (!hasDelegate && Boolean.FALSE.equals(trace.getBindingContext().get(BACKING_FIELD_REQUIRED, propertyDescriptor))) {
             reportAnnotationTargetNotApplicable(annotation, INAPPLICABLE_FIELD_TARGET_NO_BACKING_FIELD);
         }
     }
