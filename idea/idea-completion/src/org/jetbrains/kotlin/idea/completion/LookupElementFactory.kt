@@ -27,13 +27,14 @@ import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.idea.JetDescriptorIconProvider
 import org.jetbrains.kotlin.idea.caches.resolve.ResolutionFacade
 import org.jetbrains.kotlin.idea.completion.handlers.*
-import org.jetbrains.kotlin.idea.util.TypeNullability
-import org.jetbrains.kotlin.idea.util.nullability
+import org.jetbrains.kotlin.types.typeUtil.TypeNullability
+import org.jetbrains.kotlin.types.typeUtil.nullability
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.renderer.DescriptorRenderer
 import org.jetbrains.kotlin.resolve.DescriptorToSourceUtils
 import org.jetbrains.kotlin.resolve.DescriptorUtils
+import org.jetbrains.kotlin.synthetic.SyntheticJavaBeansPropertyDescriptor
 import org.jetbrains.kotlin.types.JetType
 import org.jetbrains.kotlin.types.TypeUtils
 
@@ -216,23 +217,36 @@ public class LookupElementFactory(
         }
 
         if (descriptor is CallableDescriptor) {
-            if (descriptor.getExtensionReceiverParameter() != null) {
-                val container = descriptor.getContainingDeclaration()
-                val containerPresentation = if (container is ClassDescriptor) {
-                    DescriptorUtils.getFqNameFromTopLevelClass(container).toString()
+            when {
+                descriptor is SyntheticJavaBeansPropertyDescriptor -> {
+                    var from = descriptor.getMethod.getName().asString() + "()"
+                    descriptor.setMethod?.let { from += "/" + it.getName().asString() + "()" }
+                    element = element.appendTailText(" (from $from)", true)
                 }
-                else {
-                    DescriptorUtils.getFqName(container).toString()
+
+                descriptor.getExtensionReceiverParameter() != null -> {
+                    val originalReceiver = descriptor.getOriginal().getExtensionReceiverParameter()!!
+                    val receiverPresentation = DescriptorRenderer.SHORT_NAMES_IN_TYPES.renderType(originalReceiver.getType())
+                    element = element.appendTailText(" for $receiverPresentation", true)
+
+                    val container = descriptor.getContainingDeclaration()
+                    val containerPresentation = if (container is ClassDescriptor)
+                        DescriptorUtils.getFqNameFromTopLevelClass(container).toString()
+                    else if (container is PackageFragmentDescriptor)
+                        container.fqName.toString()
+                    else
+                        null
+                    if (containerPresentation != null) {
+                        element = element.appendTailText(" in $containerPresentation", true)
+                    }
                 }
-                val originalReceiver = descriptor.getOriginal().getExtensionReceiverParameter()!!
-                val receiverPresentation = DescriptorRenderer.SHORT_NAMES_IN_TYPES.renderType(originalReceiver.getType())
-                element = element.appendTailText(" for $receiverPresentation in $containerPresentation", true)
-            }
-            else {
-                val container = descriptor.getContainingDeclaration()
-                if (container is PackageFragmentDescriptor) { // we show container only for global functions and properties
-                    //TODO: it would be probably better to show it also for static declarations which are not from the current class (imported)
-                    element = element.appendTailText(" (${container.fqName})", true)
+
+                else -> {
+                    val container = descriptor.getContainingDeclaration()
+                    if (container is PackageFragmentDescriptor) { // we show container only for global functions and properties
+                        //TODO: it would be probably better to show it also for static declarations which are not from the current class (imported)
+                        element = element.appendTailText(" (${container.fqName})", true)
+                    }
                 }
             }
         }

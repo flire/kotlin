@@ -42,6 +42,7 @@ import org.jetbrains.kotlin.resolve.jvm.JavaLazyAnalyzerPostConstruct
 import org.jetbrains.kotlin.resolve.lazy.FileScopeProviderImpl
 import org.jetbrains.kotlin.resolve.lazy.ResolveSession
 import org.jetbrains.kotlin.resolve.lazy.declarations.DeclarationProviderFactory
+import org.jetbrains.kotlin.synthetic.AdditionalScopesWithJavaSyntheticExtensions
 
 public fun StorageComponentContainer.configureJavaTopDownAnalysis(moduleContentScope: GlobalSearchScope, project: Project) {
     useInstance(moduleContentScope)
@@ -74,6 +75,7 @@ public fun createContainerForLazyResolveWithJava(
     configureModule(moduleContext, KotlinJvmCheckerProvider(moduleContext.module), bindingTrace)
     configureJavaTopDownAnalysis(moduleContentScope, moduleContext.project)
 
+    useImpl<AdditionalScopesWithJavaSyntheticExtensions>()
     useInstance(moduleClassResolver)
 
     useInstance(declarationProviderFactory)
@@ -94,6 +96,8 @@ public fun createContainerForTopDownAnalyzerForJvm(
 ): ContainerForTopDownAnalyzerForJvm = createContainer("TopDownAnalyzerForJvm") {
     configureModule(moduleContext, KotlinJvmCheckerProvider(moduleContext.module), bindingTrace)
     configureJavaTopDownAnalysis(moduleContentScope, moduleContext.project)
+
+    useImpl<AdditionalScopesWithJavaSyntheticExtensions>()
     useInstance(declarationProviderFactory)
     useInstance(BodyResolveCache.ThrowException)
 

@@ -50,6 +50,7 @@ import org.jetbrains.kotlin.idea.refactoring.introduce.introduceVariable.KotlinI
 import org.jetbrains.kotlin.idea.refactoring.introduce.selectElementsWithTargetParent
 import org.jetbrains.kotlin.idea.refactoring.introduce.showErrorHint
 import org.jetbrains.kotlin.idea.refactoring.introduce.showErrorHintByKey
+import org.jetbrains.kotlin.idea.references.mainReference
 import org.jetbrains.kotlin.idea.search.usagesSearch.DefaultSearchHelper
 import org.jetbrains.kotlin.idea.search.usagesSearch.UsagesSearchTarget
 import org.jetbrains.kotlin.idea.search.usagesSearch.search
@@ -65,6 +66,9 @@ import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.calls.callUtil.getResolvedCall
 import org.jetbrains.kotlin.resolve.scopes.JetScopeUtils
 import org.jetbrains.kotlin.resolve.scopes.receivers.ThisReceiver
+import org.jetbrains.kotlin.types.typeUtil.isNothing
+import org.jetbrains.kotlin.types.typeUtil.isUnit
+import org.jetbrains.kotlin.types.typeUtil.supertypes
 import java.util.*
 import kotlin.test.fail
 
@@ -364,7 +368,7 @@ private fun findInternalUsagesOfParametersAndReceiver(
                     override fun visitThisExpression(expression: JetThisExpression) {
                         super.visitThisExpression(expression)
 
-                        if (expression.getInstanceReference().getReference()?.resolve() == targetDescriptor) {
+                        if (expression.getInstanceReference().mainReference.resolve() == targetDescriptor) {
                             usages.putValue(receiverTypeRef, expression)
                         }
                     }

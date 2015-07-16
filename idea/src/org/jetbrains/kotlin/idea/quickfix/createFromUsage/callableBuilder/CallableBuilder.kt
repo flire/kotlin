@@ -66,6 +66,8 @@ import org.jetbrains.kotlin.types.JetType
 import org.jetbrains.kotlin.types.TypeProjectionImpl
 import org.jetbrains.kotlin.types.Variance
 import org.jetbrains.kotlin.types.checker.JetTypeChecker
+import org.jetbrains.kotlin.types.typeUtil.isAnyOrNullableAny
+import org.jetbrains.kotlin.types.typeUtil.isUnit
 import org.jetbrains.kotlin.utils.addToStdlib.singletonOrEmptyList
 import java.util.*
 import kotlin.properties.Delegates
@@ -314,7 +316,7 @@ class CallableBuilder(val config: CallableBuilderConfiguration) {
                 CallableKind.FUNCTION ->
                     returnTypeCandidate?.theType?.isUnit() ?: false
                 CallableKind.CLASS_WITH_PRIMARY_CONSTRUCTOR ->
-                    callableInfo.returnTypeInfo == TypeInfo.Empty || returnTypeCandidate?.theType?.isAny() ?: false
+                    callableInfo.returnTypeInfo == TypeInfo.Empty || returnTypeCandidate?.theType?.isAnyOrNullableAny() ?: false
                 CallableKind.SECONDARY_CONSTRUCTOR -> true
                 CallableKind.PROPERTY -> containingElement is JetBlockExpression
             }

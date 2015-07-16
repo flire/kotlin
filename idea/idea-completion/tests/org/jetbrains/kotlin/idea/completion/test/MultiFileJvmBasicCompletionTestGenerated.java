@@ -131,6 +131,12 @@ public class MultiFileJvmBasicCompletionTestGenerated extends AbstractMultiFileJ
         doTest(fileName);
     }
 
+    @TestMetadata("IncorrectGetters")
+    public void testIncorrectGetters() throws Exception {
+        String fileName = JetTestUtils.navigationMetadata("idea/idea-completion/testData/basic/multifile/IncorrectGetters/");
+        doTest(fileName);
+    }
+
     @TestMetadata("JavaInnerClasses")
     public void testJavaInnerClasses() throws Exception {
         String fileName = JetTestUtils.navigationMetadata("idea/idea-completion/testData/basic/multifile/JavaInnerClasses/");
@@ -278,6 +284,12 @@ public class MultiFileJvmBasicCompletionTestGenerated extends AbstractMultiFileJ
     @TestMetadata("PreferMoreSpecificExtension2")
     public void testPreferMoreSpecificExtension2() throws Exception {
         String fileName = JetTestUtils.navigationMetadata("idea/idea-completion/testData/basic/multifile/PreferMoreSpecificExtension2/");
+        doTest(fileName);
+    }
+
+    @TestMetadata("SyntheticExtensionForGenericClass")
+    public void testSyntheticExtensionForGenericClass() throws Exception {
+        String fileName = JetTestUtils.navigationMetadata("idea/idea-completion/testData/basic/multifile/SyntheticExtensionForGenericClass/");
         doTest(fileName);
     }
 
