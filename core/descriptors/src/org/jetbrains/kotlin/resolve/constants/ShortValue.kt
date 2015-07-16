@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
-package org.jetbrains.kotlin.resolve.constants;
+package org.jetbrains.kotlin.resolve.constants
 
-public abstract class IntegerValueConstant<T> extends CompileTimeConstant<T> {
+import org.jetbrains.kotlin.builtins.KotlinBuiltIns
+import org.jetbrains.kotlin.descriptors.annotations.AnnotationArgumentVisitor
 
-    protected IntegerValueConstant(T value, boolean canBeUsedInAnnotations, boolean pure, boolean usesVariableAsConstant) {
-        super(value, canBeUsedInAnnotations, pure, usesVariableAsConstant);
-    }
+public class ShortValue(
+        value: Short,
+        builtIns: KotlinBuiltIns
+) : IntegerValueConstant<Short>(value) {
+
+    override val type = builtIns.getShortType()
+
+    override fun <R, D> accept(visitor: AnnotationArgumentVisitor<R, D>, data: D) = visitor.visitShortValue(this, data)
+
+    override fun toString() = "$value.toShort()"
 }

@@ -32,7 +32,7 @@ import org.jetbrains.kotlin.name.FqName;
 import org.jetbrains.kotlin.name.FqNameUnsafe;
 import org.jetbrains.kotlin.name.Name;
 import org.jetbrains.kotlin.resolve.DescriptorUtils;
-import org.jetbrains.kotlin.resolve.constants.CompileTimeConstant;
+import org.jetbrains.kotlin.resolve.constants.ConstantValue;
 import org.jetbrains.kotlin.resolve.scopes.JetScope;
 import org.jetbrains.kotlin.storage.LockBasedStorageManager;
 import org.jetbrains.kotlin.types.*;
@@ -111,7 +111,7 @@ public class KotlinBuiltIns {
     private KotlinBuiltIns() {
         LockBasedStorageManager storageManager = new LockBasedStorageManager();
         builtInsModule = new ModuleDescriptorImpl(
-                Name.special("<built-ins module>"), storageManager, ModuleParameters.Empty.INSTANCE$
+                Name.special("<built-ins module>"), storageManager, ModuleParameters.Empty.INSTANCE$, this
         );
 
         PackageFragmentProvider packageFragmentProvider = BuiltinsPackage.createBuiltInPackageFragmentProvider(
@@ -659,7 +659,7 @@ public class KotlinBuiltIns {
     @NotNull
     public AnnotationDescriptor createExtensionAnnotation() {
         return new AnnotationDescriptorImpl(getBuiltInClassByName("extension").getDefaultType(),
-                                            Collections.<ValueParameterDescriptor, CompileTimeConstant<?>>emptyMap());
+                                            Collections.<ValueParameterDescriptor, ConstantValue<?>>emptyMap());
     }
 
     private static boolean isTypeAnnotatedWithExtension(@NotNull JetType type) {
