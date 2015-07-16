@@ -206,6 +206,7 @@ public class DataFlowValueFactory {
             @NotNull BindingContext bindingContext,
             @NotNull DeclarationDescriptor containingDeclarationOrModule
     ) {
+        // TODO: calls of this function take too much time
         if (expression != null) {
             JetExpression deparenthesized = JetPsiUtil.deparenthesize(expression);
             if (expression != deparenthesized) {
