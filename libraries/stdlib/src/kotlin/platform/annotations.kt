@@ -23,11 +23,15 @@ package kotlin.platform
  * for more information.
  * @property name the name of the element.
  */
-public annotation class platformName(public val name: String)
+target(AnnotationTarget.CLASSIFIER, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY, AnnotationTarget.FIELD,
+       AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
+public annotation(retention = AnnotationRetention.RUNTIME) class platformName(public val name: String)
 
 /**
  * Specifies that a static method or field needs to be generated from this element.
  * See the [Kotlin language documentation](http://kotlinlang.org/docs/reference/java-interop.html#static-methods-and-fields)
  * for more information.
  */
-public annotation class platformStatic
+target(AnnotationTarget.FUNCTION, AnnotationTarget.CONSTRUCTOR, AnnotationTarget.PROPERTY, AnnotationTarget.FIELD,
+       AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
+public annotation(retention = AnnotationRetention.RUNTIME) class platformStatic

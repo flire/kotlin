@@ -32,8 +32,8 @@ var vardef: Int = 1
     set
 
 <!INAPPLICABLE_PLATFORM_NAME!>@platformName("C")<!>
-class C <!INAPPLICABLE_PLATFORM_NAME!>platformName("primary")<!> constructor() {
-    <!INAPPLICABLE_PLATFORM_NAME!>platformName("ctr")<!> constructor(x: Int): this() {}
+class C <!INAPPLICABLE_PLATFORM_NAME, WRONG_ANNOTATION_TARGET!>platformName("primary")<!> constructor() {
+    <!INAPPLICABLE_PLATFORM_NAME, WRONG_ANNOTATION_TARGET!>platformName("ctr")<!> constructor(x: Int): this() {}
 
     @platformName("a")
     fun foo() {}
@@ -63,7 +63,7 @@ fun foo1() {
     <!INAPPLICABLE_PLATFORM_NAME!>@platformName("a")<!>
     fun foo() {}
 
-    <!INAPPLICABLE_PLATFORM_NAME!>@platformName("a")<!>
+    <!INAPPLICABLE_PLATFORM_NAME, WRONG_ANNOTATION_TARGET!>@platformName("a")<!>
     val x = 1
 }
 

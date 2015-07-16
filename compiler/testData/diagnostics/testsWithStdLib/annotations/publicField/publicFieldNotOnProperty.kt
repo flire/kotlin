@@ -12,5 +12,5 @@ class C {
 
 <!INAPPLICABLE_PUBLIC_FIELD!>@kotlin.jvm.publicField<!>
 fun foo() {
-    <!INAPPLICABLE_PUBLIC_FIELD!>@kotlin.jvm.publicField<!> val <!UNUSED_VARIABLE!>x<!> = "A"
+    <!INAPPLICABLE_PUBLIC_FIELD, WRONG_ANNOTATION_TARGET!>@kotlin.jvm.publicField<!> val <!UNUSED_VARIABLE!>x<!> = "A"
 }

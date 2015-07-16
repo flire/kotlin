@@ -53,7 +53,8 @@ public abstract class AbstractJvmRuntimeDescriptorLoaderTest : TestCaseWithTmpdi
         private val renderer = DescriptorRenderer.withOptions {
             withDefinedIn = false
             excludedAnnotationClasses = (listOf(
-                    FqName(ExpectedLoadErrorsUtil.ANNOTATION_CLASS_NAME)
+                    FqName(ExpectedLoadErrorsUtil.ANNOTATION_CLASS_NAME),
+                    FqName("kotlin.inline")
             ) + JvmAnnotationNames.ANNOTATIONS_COPIED_TO_TYPES).toSet()
             overrideRenderingPolicy = OverrideRenderingPolicy.RENDER_OPEN_OVERRIDE
             parameterNameRenderingPolicy = ParameterNameRenderingPolicy.NONE
